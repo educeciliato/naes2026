@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     #Importar url's dos apps
     path("", include("website.urls")),
+    path("farmacia/", include("farmacia.urls")),
 ]

@@ -1,0 +1,201 @@
+{% extends "website/modelo.html" %} {% load static %} {% block titulo %}Sobre —
+NAES 2026{% endblock titulo %} {% block hero %}
+<section class="hero py-5">
+  <div class="hero-noise"></div>
+  <div class="container py-5 position-relative">
+    <div class="row align-items-center gy-4">
+      <div class="col-lg-7">
+        <span
+          class="badge bg-petrol-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-3 d-inline-block"
+          style="font-size: 0.75rem; letter-spacing: 0.05em"
+        >
+          <i class="bi bi-info-circle me-1"></i> Sobre o Projeto
+        </span>
+        <h1 class="display-4 fw-display text-white mb-3">
+          Conheça o<br />
+          <span style="color: var(--petrol-lighter)">NAES 2026</span>
+        </h1>
+        <p
+          class="mb-4"
+          style="
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 1.05rem;
+            max-width: 520px;
+            line-height: 1.7;
+          "
+        >
+          Uma plataforma desenvolvida pelo IFPR para organizar campeonatos de
+          jogos eletrônicos, promover a cultura gamer e fortalecer a comunidade
+          estudantil.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock hero %} {% block conteudo %}
+
+<!-- O que é -->
+<section class="py-5 bg-surface-alt">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <h2 class="fw-display mb-3">O que é o NAES?</h2>
+        <p class="text-secondary mb-3" style="line-height: 1.8">
+          O <strong>NAES (Núcleo de Atividades de E-Sports)</strong> é uma
+          iniciativa do IFPR para fomentar a prática de jogos eletrônicos como
+          atividade esportiva e educacional no ambiente escolar.
+        </p>
+        <p class="text-secondary mb-4" style="line-height: 1.8">
+          Por meio de campeonatos organizados, estudantes podem desenvolver
+          habilidades como trabalho em equipe, raciocínio estratégico e
+          competitividade saudável.
+        </p>
+        <a
+          href="{% url 'contato' %}"
+          class="btn btn-primary rounded-2 fw-semibold px-4"
+        >
+          <i class="bi bi-envelope me-1"></i>Entre em contato
+        </a>
+      </div>
+      <div class="col-lg-6">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="card-petrol p-4 text-center">
+              <div class="fw-display text-primary" style="font-size: 2rem">
+                🎮
+              </div>
+              <h5 class="fw-display mt-2 mb-1">Modalidades</h5>
+              <p class="text-secondary mb-0" style="font-size: 0.875rem">
+                Diversos jogos e categorias
+              </p>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="card-petrol p-4 text-center">
+              <div class="fw-display text-success" style="font-size: 2rem">
+                🏆
+              </div>
+              <h5 class="fw-display mt-2 mb-1">Torneios</h5>
+              <p class="text-secondary mb-0" style="font-size: 0.875rem">
+                Competições organizadas
+              </p>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="card-petrol p-4 text-center">
+              <div class="fw-display text-info" style="font-size: 2rem">👥</div>
+              <h5 class="fw-display mt-2 mb-1">Equipes</h5>
+              <p class="text-secondary mb-0" style="font-size: 0.875rem">
+                Times de estudantes
+              </p>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="card-petrol p-4 text-center">
+              <div class="fw-display text-warning" style="font-size: 2rem">
+                📊
+              </div>
+              <h5 class="fw-display mt-2 mb-1">Rankings</h5>
+              <p class="text-secondary mb-0" style="font-size: 0.875rem">
+                Acompanhe a classificação
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Missão / Visão / Valores -->
+<section class="py-5 bg-surface">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-display mb-2">Nossa Missão</h2>
+      <p class="text-secondary">Os pilares que guiam o NAES 2026</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card-petrol p-4 h-100">
+          <div class="feature-icon bg-petrol-subtle text-primary mb-3">
+            <i class="bi bi-bullseye"></i>
+          </div>
+          <h5 class="fw-display mb-2">Missão</h5>
+          <p
+            class="text-secondary mb-0"
+            style="font-size: 0.9rem; line-height: 1.7"
+          >
+            Promover o e-sport como atividade educativa, desenvolvendo
+            habilidades cognitivas e sociais nos estudantes do IFPR.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card-petrol p-4 h-100">
+          <div
+            class="feature-icon mb-3 rounded-xl"
+            style="background: #e5f6ef; color: var(--cp-success)"
+          >
+            <i class="bi bi-eye"></i>
+          </div>
+          <h5 class="fw-display mb-2">Visão</h5>
+          <p
+            class="text-secondary mb-0"
+            style="font-size: 0.9rem; line-height: 1.7"
+          >
+            Ser referência em campeonatos estudantis de e-sports no Paraná,
+            reconhecido pela organização e inclusão.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card-petrol p-4 h-100">
+          <div
+            class="feature-icon mb-3 rounded-xl"
+            style="background: #e8f1fb; color: var(--cp-info)"
+          >
+            <i class="bi bi-heart"></i>
+          </div>
+          <h5 class="fw-display mb-2">Valores</h5>
+          <p
+            class="text-secondary mb-0"
+            style="font-size: 0.9rem; line-height: 1.7"
+          >
+            Fair play, inclusão, respeito mútuo e desenvolvimento contínuo de
+            todos os participantes.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-5 bg-petrol">
+  <div class="container text-center py-3">
+    <h2 class="fw-display text-white mb-3">Faça parte da comunidade</h2>
+    <p
+      class="mb-4"
+      style="
+        color: rgba(255, 255, 255, 0.75);
+        max-width: 500px;
+        margin: 0 auto 1.5rem;
+      "
+    >
+      Inscreva sua equipe nos próximos campeonatos e represente sua turma.
+    </p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a
+        href="{% url 'contato' %}"
+        class="btn btn-light fw-semibold px-4 rounded-2"
+      >
+        <i class="bi bi-envelope me-1"></i>Entrar em contato
+      </a>
+      <a href="{% url 'index' %}" class="btn btn-auth px-4 rounded-2">
+        <i class="bi bi-house me-1"></i>Voltar ao início
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock conteudo %}

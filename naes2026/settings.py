@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     #Ativar meus apps
     "website.apps.WebsiteConfig",
+    'farmacia.apps.FarmaciaConfig',
 ]
 
 MIDDLEWARE = [

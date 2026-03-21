@@ -1,0 +1,191 @@
+{% extends "website/modelo.html" %} {% load static %} {% block titulo %}Contato
+— NAES 2026{% endblock titulo %} {% block hero %}
+<section class="hero py-5">
+  <div class="hero-noise"></div>
+  <div class="container py-5 position-relative">
+    <div class="col-lg-7">
+      <span
+        class="badge bg-petrol-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-3 d-inline-block"
+        style="font-size: 0.75rem; letter-spacing: 0.05em"
+      >
+        <i class="bi bi-envelope me-1"></i> Fale Conosco
+      </span>
+      <h1 class="display-4 fw-display text-white mb-3">
+        Entre em<br />
+        <span style="color: var(--petrol-lighter)">contato</span>
+      </h1>
+      <p
+        class="mb-0"
+        style="
+          color: rgba(255, 255, 255, 0.75);
+          font-size: 1.05rem;
+          max-width: 480px;
+          line-height: 1.7;
+        "
+      >
+        Dúvidas sobre campeonatos, inscrições ou parcerias? Nossa equipe está
+        pronta para ajudar.
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock hero %} {% block conteudo %}
+
+<section class="py-5 bg-surface-alt">
+  <div class="container">
+    <div class="row g-5">
+      <!-- Formulário -->
+      <div class="col-lg-7">
+        <h3 class="fw-display mb-4">Envie sua mensagem</h3>
+        <div class="card-petrol p-4">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" style="font-size: 0.85rem"
+                >Nome completo</label
+              >
+              <input
+                type="text"
+                class="form-control rounded-2"
+                placeholder="João da Silva"
+                style="border-color: var(--border-color)"
+              />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" style="font-size: 0.85rem"
+                >E-mail</label
+              >
+              <input
+                type="email"
+                class="form-control rounded-2"
+                placeholder="joao@email.com"
+                style="border-color: var(--border-color)"
+              />
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold" style="font-size: 0.85rem"
+                >Assunto</label
+              >
+              <select
+                class="form-select rounded-2"
+                style="border-color: var(--border-color)"
+              >
+                <option>Selecionar...</option>
+                <option>Inscrição em campeonato</option>
+                <option>Dúvidas sobre modalidades</option>
+                <option>Parceria ou patrocínio</option>
+                <option>Problemas técnicos</option>
+                <option>Outros</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold" style="font-size: 0.85rem"
+                >Mensagem</label
+              >
+              <textarea
+                class="form-control rounded-2"
+                rows="5"
+                placeholder="Descreva sua dúvida ou solicitação..."
+                style="border-color: var(--border-color); resize: vertical"
+              ></textarea>
+            </div>
+            <div class="col-12">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="termos" />
+                <label
+                  class="form-check-label"
+                  for="termos"
+                  style="font-size: 0.875rem"
+                >
+                  Concordo com a
+                  <a href="#" class="text-primary fw-semibold"
+                    >Política de Privacidade</a
+                  >.
+                </label>
+              </div>
+            </div>
+            <div class="col-12 d-flex gap-2">
+              <button class="btn btn-primary rounded-2 fw-semibold px-4">
+                <i class="bi bi-send me-1"></i>Enviar mensagem
+              </button>
+              <button class="btn btn-outline-secondary rounded-2" type="reset">
+                Limpar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info lateral -->
+      <div class="col-lg-5">
+        <h3 class="fw-display mb-4">Informações</h3>
+
+        <div class="card-petrol p-4 mb-3">
+          <div class="d-flex align-items-start gap-3">
+            <div
+              class="feature-icon bg-petrol-subtle text-primary flex-shrink-0"
+            >
+              <i class="bi bi-geo-alt"></i>
+            </div>
+            <div>
+              <h6 class="fw-semibold mb-1">Localização</h6>
+              <p class="text-secondary mb-0" style="font-size: 0.875rem">
+                IFPR — Campus Paranavaí<br />Paraná, Brasil
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-petrol p-4 mb-3">
+          <div class="d-flex align-items-start gap-3">
+            <div
+              class="feature-icon mb-0 rounded-xl flex-shrink-0"
+              style="background: #e5f6ef; color: var(--cp-success)"
+            >
+              <i class="bi bi-envelope"></i>
+            </div>
+            <div>
+              <h6 class="fw-semibold mb-1">E-mail</h6>
+              <p class="text-secondary mb-0" style="font-size: 0.875rem">
+                naes@ifpr.edu.br
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-petrol p-4 mb-3">
+          <div class="d-flex align-items-start gap-3">
+            <div
+              class="feature-icon mb-0 rounded-xl flex-shrink-0"
+              style="background: #e8f1fb; color: var(--cp-info)"
+            >
+              <i class="bi bi-clock"></i>
+            </div>
+            <div>
+              <h6 class="fw-semibold mb-1">Horário de atendimento</h6>
+              <p class="text-secondary mb-0" style="font-size: 0.875rem">
+                Segunda a sexta<br />08h — 17h
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-petrol p-4">
+          <h6 class="fw-semibold mb-3">Redes sociais</h6>
+          <div class="d-flex gap-2 flex-wrap">
+            <a href="#" class="btn btn-outline-primary btn-sm rounded-2"
+              ><i class="bi bi-instagram me-1"></i>Instagram</a
+            >
+            <a href="#" class="btn btn-outline-secondary btn-sm rounded-2"
+              ><i class="bi bi-discord me-1"></i>Discord</a
+            >
+            <a href="#" class="btn btn-outline-danger btn-sm rounded-2"
+              ><i class="bi bi-youtube me-1"></i>YouTube</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock conteudo %}

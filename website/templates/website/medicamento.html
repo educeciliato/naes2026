@@ -1,0 +1,47 @@
+{% extends "website/modelo.html" %} {% block titulo %}Medicamentos{% endblock %}
+{% block conteudo %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">Medicamentos</h5>
+  <a href="{% url 'med_novo' %}" class="btn btn-primary btn-sm">+ Novo</a>
+</div>
+
+<div class="card">
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Lote</th>
+        <th>Validade</th>
+        <th>Qtd</th>
+        <th>Controlado</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in meds %}
+      <tr>
+        <td>{{ m.nome }}</td>
+        <td>{{ m.lote }}</td>
+        <td>{{ m.data_validade|date:"d/m/Y" }}</td>
+        <td>{{ m.quantidade }}</td>
+        <td>{% if m.controlado %}⚠️ Sim{% else %}Não{% endif %}</td>
+        <td>
+          <a href="{% url 'med_editar' m.pk %}" class="btn btn-sm btn-secondary"
+            >Editar</a
+          >
+          <a href="{% url 'med_excluir' m.pk %}" class="btn btn-sm btn-danger"
+            >Excluir</a
+          >
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" class="text-center text-muted py-3">
+          Nenhum medicamento cadastrado.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

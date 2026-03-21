@@ -1,0 +1,248 @@
+{% extends "website/modelo.html" %} {% load static %} {% block titulo %}Início —
+NAES 2026{% endblock titulo %} {% block hero %}
+<section class="hero py-5">
+  <div class="hero-noise"></div>
+  <div class="container py-5 position-relative">
+    <div class="row align-items-center gy-4">
+      <div class="col-lg-7">
+        <span
+          class="badge bg-petrol-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-3 d-inline-block"
+          style="font-size: 0.75rem; letter-spacing: 0.05em"
+        >
+          <i class="bi bi-controller me-1"></i> IFPR E-Sports
+        </span>
+        <h1 class="display-4 fw-display text-white mb-3">
+          Gerencie campeonatos<br />
+          <span style="color: var(--petrol-lighter)">de forma simples</span>
+        </h1>
+        <p
+          class="text-white-75 mb-4"
+          style="max-width: 560px; line-height: 1.6"
+        >
+          Crie torneios, inscreva jogadores e equipes por modalidade, acompanhe
+          resultados e fortaleça a comunidade de jogos eletrônicos do IFPR.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a
+            href="{% url 'sobre' %}"
+            class="btn btn-light fw-semibold px-4 rounded-2"
+          >
+            <i class="bi bi-info-circle me-1"></i>Sobre o projeto
+          </a>
+          <a href="{% url 'contato' %}" class="btn btn-auth px-4 rounded-2">
+            <i class="bi bi-envelope me-1"></i>Fale conosco
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-5 d-none d-lg-block">
+        <div
+          class="card-petrol p-4 rounded-2xl text-center"
+          style="
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+          "
+        >
+          <div style="font-size: 3rem">🎮</div>
+          <h5 class="fw-display text-white mt-3">Participe dos torneios</h5>
+          <p
+            class="mb-3"
+            style="color: rgba(255, 255, 255, 0.55); font-size: 0.9rem"
+          >
+            Inscreva sua equipe por modalidade e acompanhe o progresso ao vivo.
+          </p>
+          <a href="#campeonatos" class="btn btn-primary btn-sm px-4 rounded-2"
+            >Ver Campeonatos</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock hero %} {% block conteudo %}
+
+<!-- Recursos principais -->
+<section id="campeonatos" class="py-5 bg-surface-alt">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-display mb-2">Recursos Principais</h2>
+      <p class="text-secondary">
+        Ferramentas essenciais para organizar campeonatos e inscrever jogadores
+        e equipes.
+      </p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card-petrol p-4 h-100 text-center">
+          <div class="feature-icon bg-petrol-subtle text-primary mx-auto mb-3">
+            <i class="bi bi-calendar-check"></i>
+          </div>
+          <h5 class="fw-display mb-2">Criar Torneios</h5>
+          <p class="text-secondary mb-3" style="font-size: 0.875rem">
+            Defina modalidades, regras e chaves de disputa de forma intuitiva.
+          </p>
+          <a
+            href="#"
+            class="text-primary fw-semibold"
+            style="font-size: 0.875rem"
+            >Saiba mais <i class="bi bi-arrow-right"></i
+          ></a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card-petrol p-4 h-100 text-center">
+          <div
+            class="feature-icon mx-auto mb-3 rounded-xl"
+            style="background: #e5f6ef; color: var(--cp-success)"
+          >
+            <i class="bi bi-people-fill"></i>
+          </div>
+          <h5 class="fw-display mb-2">Inscrição de Equipes</h5>
+          <p class="text-secondary mb-3" style="font-size: 0.875rem">
+            Jogadores inscrevem suas equipes em modalidades distintas com
+            facilidade.
+          </p>
+          <a
+            href="#"
+            class="fw-semibold"
+            style="font-size: 0.875rem; color: var(--cp-success)"
+            >Saiba mais <i class="bi bi-arrow-right"></i
+          ></a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card-petrol p-4 h-100 text-center">
+          <div
+            class="feature-icon mx-auto mb-3 rounded-xl"
+            style="background: #e8f1fb; color: var(--cp-info)"
+          >
+            <i class="bi bi-bar-chart-line"></i>
+          </div>
+          <h5 class="fw-display mb-2">Resultados & Rankings</h5>
+          <p class="text-secondary mb-3" style="font-size: 0.875rem">
+            Acompanhe placares, tabelas e a evolução dos jogadores em tempo
+            real.
+          </p>
+          <a
+            href="#"
+            class="fw-semibold"
+            style="font-size: 0.875rem; color: var(--cp-info)"
+            >Saiba mais <i class="bi bi-arrow-right"></i
+          ></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Destaques -->
+<section class="py-5 bg-surface">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-display mb-2">Como funciona?</h2>
+      <p class="text-secondary">
+        Em apenas 3 passos, sua equipe já está competindo
+      </p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="d-flex gap-3">
+          <div
+            class="feature-icon bg-petrol-subtle text-primary flex-shrink-0"
+            style="
+              font-family: &quot;Syne&quot;, sans-serif;
+              font-weight: 800;
+              font-size: 1.1rem;
+            "
+          >
+            1
+          </div>
+          <div>
+            <h5 class="fw-display mb-1">Crie sua conta</h5>
+            <p
+              class="text-secondary mb-0"
+              style="font-size: 0.9rem; line-height: 1.7"
+            >
+              Cadastre-se com o e-mail institucional do IFPR e configure seu
+              perfil.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="d-flex gap-3">
+          <div
+            class="feature-icon bg-petrol-subtle text-primary flex-shrink-0"
+            style="
+              font-family: &quot;Syne&quot;, sans-serif;
+              font-weight: 800;
+              font-size: 1.1rem;
+            "
+          >
+            2
+          </div>
+          <div>
+            <h5 class="fw-display mb-1">Monte sua equipe</h5>
+            <p
+              class="text-secondary mb-0"
+              style="font-size: 0.9rem; line-height: 1.7"
+            >
+              Convide amigos, escolha a modalidade e registre sua equipe no
+              sistema.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="d-flex gap-3">
+          <div
+            class="feature-icon bg-petrol-subtle text-primary flex-shrink-0"
+            style="
+              font-family: &quot;Syne&quot;, sans-serif;
+              font-weight: 800;
+              font-size: 1.1rem;
+            "
+          >
+            3
+          </div>
+          <div>
+            <h5 class="fw-display mb-1">Compita!</h5>
+            <p
+              class="text-secondary mb-0"
+              style="font-size: 0.9rem; line-height: 1.7"
+            >
+              Participe dos torneios agendados e acompanhe sua posição no
+              ranking.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-5 bg-petrol">
+  <div class="container text-center py-3">
+    <h2 class="fw-display text-white mb-3">Pronto para competir?</h2>
+    <p
+      class="mb-4 text-white-75"
+      style="max-width: 500px; margin: 0 auto 1.5rem"
+    >
+      Crie ou participe de campeonatos organizados pelo IFPR e faça parte da
+      comunidade.
+    </p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a
+        href="{% url 'contato' %}"
+        class="btn btn-light fw-semibold px-4 rounded-2"
+      >
+        <i class="bi bi-envelope me-1"></i>Entrar em contato
+      </a>
+      <a href="{% url 'sobre' %}" class="btn btn-auth px-4 rounded-2">
+        <i class="bi bi-info-circle me-1"></i>Saiba mais
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock conteudo %}
