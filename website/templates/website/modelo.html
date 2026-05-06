@@ -47,11 +47,11 @@
             <i class="bi bi-plus-circle"></i>Cadastrar
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{% url 'med_novo' %}"><i class="bi bi-capsule me-2" style="color:var(--clr-primary)"></i>Medicamento</a></li>
-            <li><a class="dropdown-item" href="{% url 'prod_novo' %}"><i class="bi bi-box me-2" style="color:var(--clr-primary)"></i>Produto Diverso</a></li>
+            <li><a class="dropdown-item" href="{% url 'medicamento_novo' %}"><i class="bi bi-capsule me-2" style="color:var(--clr-primary)"></i>Medicamento</a></li>
+            <li><a class="dropdown-item" href="{% url 'produto_novo' %}"><i class="bi bi-box me-2" style="color:var(--clr-primary)"></i>Produto Diverso</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{% url 'lab_novo' %}"><i class="bi bi-building me-2" style="color:var(--clr-primary)"></i>Laboratório</a></li>
-            <li><a class="dropdown-item" href="{% url 'dist_novo' %}"><i class="bi bi-truck me-2" style="color:var(--clr-primary)"></i>Distribuidora</a></li>
+            <li><a class="dropdown-item" href="{% url 'laboratorio_novo' %}"><i class="bi bi-building me-2" style="color:var(--clr-primary)"></i>Laboratório</a></li>
+            <li><a class="dropdown-item" href="{% url 'distribuidora_novo' %}"><i class="bi bi-truck me-2" style="color:var(--clr-primary)"></i>Distribuidora</a></li>
           </ul>
         </li>
 
@@ -60,15 +60,15 @@
             <i class="bi bi-list-ul"></i>Listar
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{% url 'med_listar' %}"><i class="bi bi-capsule me-2" style="color:var(--clr-primary)"></i>Medicamentos</a></li>
-            <li><a class="dropdown-item" href="{% url 'prod_listar' %}"><i class="bi bi-box me-2" style="color:var(--clr-primary)"></i>Produtos Diversos</a></li>
+            <li><a class="dropdown-item" href="{% url 'medicamento_listar' %}"><i class="bi bi-capsule me-2" style="color:var(--clr-primary)"></i>Medicamentos</a></li>
+            <li><a class="dropdown-item" href="{% url 'produto_listar' %}"><i class="bi bi-box me-2" style="color:var(--clr-primary)"></i>Produtos Diversos</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{% url 'lab_listar' %}"><i class="bi bi-building me-2" style="color:var(--clr-primary)"></i>Laboratórios</a></li>
-            <li><a class="dropdown-item" href="{% url 'dist_listar' %}"><i class="bi bi-truck me-2" style="color:var(--clr-primary)"></i>Distribuidoras</a></li>
+            <li><a class="dropdown-item" href="{% url 'laboratorio_listar' %}"><i class="bi bi-building me-2" style="color:var(--clr-primary)"></i>Laboratórios</a></li>
+            <li><a class="dropdown-item" href="{% url 'distribuidora_listar' %}"><i class="bi bi-truck me-2" style="color:var(--clr-primary)"></i>Distribuidoras</a></li>
             {% if user.is_staff %}
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{% url 'usr_listar' %}"><i class="bi bi-people me-2" style="color:var(--clr-primary)"></i>Usuários</a></li>
-            <li><a class="dropdown-item" href="{% url 'grp_listar' %}"><i class="bi bi-shield-lock me-2" style="color:var(--clr-primary)"></i>Grupos</a></li>
+            <li><a class="dropdown-item" href="{% url 'usuario_listar' %}"><i class="bi bi-people me-2" style="color:var(--clr-primary)"></i>Usuários</a></li>
+            <li><a class="dropdown-item" href="{% url 'grupo_listar' %}"><i class="bi bi-shield-lock me-2" style="color:var(--clr-primary)"></i>Grupos</a></li>
             {% endif %}
           </ul>
         </li>
@@ -106,6 +106,8 @@
 </nav>
 
 <div id="main-wrapper">
+
+  {% block hero %}{% endblock %}
 
   {% if messages %}
   <div class="toast-stack">

@@ -1,5 +1,8 @@
-{% extends "website/modelo.html" %} {% load static %} {% block titulo %}Contato
-— NAES 2026{% endblock titulo %} {% block hero %}
+{% extends "website/modelo.html" %}
+{% load static %}
+
+{% block titulo %}Contato — PharmaSys{% endblock %}
+{% block hero %}
 <section class="hero py-5">
   <div class="hero-noise"></div>
   <div class="container py-5 position-relative">
@@ -14,17 +17,9 @@
         Entre em<br />
         <span style="color: var(--petrol-lighter)">contato</span>
       </h1>
-      <p
-        class="mb-0"
-        style="
-          color: rgba(255, 255, 255, 0.75);
-          font-size: 1.05rem;
-          max-width: 480px;
-          line-height: 1.7;
-        "
-      >
-        Dúvidas sobre campeonatos, inscrições ou parcerias? Nossa equipe está
-        pronta para ajudar.
+      <p class="mb-0" style="color: rgba(255,255,255,0.85); max-width:480px; line-height:1.7">
+        Precisa de ajuda com o PharmaSys? Relate problemas, solicite suporte
+        ou envie sugestões para melhorar a gestão de estoque da sua farmácia.
       </p>
     </div>
   </div>
@@ -70,10 +65,10 @@
                 style="border-color: var(--border-color)"
               >
                 <option>Selecionar...</option>
-                <option>Inscrição em campeonato</option>
-                <option>Dúvidas sobre modalidades</option>
-                <option>Parceria ou patrocínio</option>
-                <option>Problemas técnicos</option>
+                <option>Suporte técnico</option>
+                <option>Relatar erro de estoque</option>
+                <option>Solicitar funcionalidade</option>
+                <option>Outros</option>
                 <option>Outros</option>
               </select>
             </div>
@@ -129,7 +124,7 @@
             <div>
               <h6 class="fw-semibold mb-1">Localização</h6>
               <p class="text-secondary mb-0" style="font-size: 0.875rem">
-                IFPR — Campus Paranavaí<br />Paraná, Brasil
+                Sede do PharmaSys<br />Local de implantação do cliente
               </p>
             </div>
           </div>
@@ -146,7 +141,7 @@
             <div>
               <h6 class="fw-semibold mb-1">E-mail</h6>
               <p class="text-secondary mb-0" style="font-size: 0.875rem">
-                naes@ifpr.edu.br
+                suporte@pharmasys.local
               </p>
             </div>
           </div>

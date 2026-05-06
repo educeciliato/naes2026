@@ -1,0 +1,26 @@
+{% extends "website/modelo.html" %}
+{% load static %}
+
+{% block titulo %}Detalhe — PharmaSys{% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{ % url 'dashboard' % }">Início</a></li>
+  <li class="breadcrumb-item active" aria-current="page">Detalhe</li>
+{% endblock breadcrumb %}
+
+{% block conteudo %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h4 class="mb-3">Detalhe</h4>
+        <p class="text-secondary mb-3">{{ object._meta.verbose_name }} — {{ object }}</p>
+        <pre class="small">{{ object }}</pre>
+        <div class="d-flex gap-2">
+          <a href="#" class="btn btn-outline-secondary" onclick="window.history.back()">Voltar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock conteudo %}

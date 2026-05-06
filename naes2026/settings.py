@@ -79,8 +79,15 @@ WSGI_APPLICATION = 'naes2026.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASE_URL='postgresql://neondb_owner:npg_FAlIq4RE5LZn@ep-lingering-glade-ac7bddn4-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
-# Replace the DATABASES section of your settings.py with this
+# Configure database from environment variable DATABASE_URL (PostgreSQL)
+# Never commit real credentials to source control. Set DATABASE_URL in env.
+DATABASE_URL = os.environ.get('postgresql://neondb_owner:npg_FAlIq4RE5LZn@ep-lingering-glade-ac7bddn4-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require')
+if not DATABASE_URL:
+    raise Exception(
+        "DATABASE_URL environment variable not set. Configure PostgreSQL connection (Neon.tech)"
+    )
+
+# Parse DATABASE_URL and build DATABASES dict
 tmpPostgres = urlparse(DATABASE_URL)
 
 DATABASES = {
@@ -90,7 +97,7 @@ DATABASES = {
         'USER': tmpPostgres.username,
         'PASSWORD': tmpPostgres.password,
         'HOST': tmpPostgres.hostname,
-        'PORT': 5432,
+        'PORT': tmpPostgres.port or 5432,
         'OPTIONS': dict(parse_qsl(tmpPostgres.query)),
     }
 }

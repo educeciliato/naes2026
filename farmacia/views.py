@@ -47,7 +47,7 @@ def dashboard(request):
 
 # ── Mixin de autenticação + preenchimento automático de cadastrado_por ───────
 class FarmaciaLoginMixin(LoginRequiredMixin):
-    login_url = "/login/"
+    login_url = "/farmacia/login/"
 
     def form_valid(self, form):
         obj = form.save(commit=False)
@@ -62,14 +62,20 @@ class LaboratorioList(LoginRequiredMixin, ListView):
     model = Laboratorio
     template_name = "website/laboratorio.html"
     context_object_name = "labs"
-    login_url = "/login/"
+    login_url = "/farmacia/login/"
+
+
+class LaboratorioDetail(LoginRequiredMixin, DetailView):
+    model = Laboratorio
+    template_name = "website/detalhe.html"
+    login_url = "/farmacia/login/"
 
 
 class LaboratorioCreate(FarmaciaLoginMixin, CreateView):
     model = Laboratorio
     form_class = LaboratorioForm
     template_name = "website/form.html"
-    success_url = reverse_lazy("lab_listar")
+    success_url = reverse_lazy("laboratorio_listar")
     extra_context = {"titulo": "Novo Laboratório", "botao": "Criar Laboratório"}
 
 
@@ -77,15 +83,15 @@ class LaboratorioUpdate(FarmaciaLoginMixin, UpdateView):
     model = Laboratorio
     form_class = LaboratorioForm
     template_name = "website/form.html"
-    success_url = reverse_lazy("lab_listar")
+    success_url = reverse_lazy("laboratorio_listar")
     extra_context = {"titulo": "Editar Laboratório", "botao": "Salvar Alterações"}
 
 
 class LaboratorioDelete(LoginRequiredMixin, DeleteView):
     model = Laboratorio
     template_name = "website/form.html"
-    success_url = reverse_lazy("lab_listar")
-    login_url = "/login/"
+    success_url = reverse_lazy("laboratorio_listar")
+    login_url = "/farmacia/login/"
     extra_context = {"titulo": "Excluir Laboratório", "botao": "Sim, excluir!"}
 
 
@@ -94,14 +100,20 @@ class DistribuidoraList(LoginRequiredMixin, ListView):
     model = Distribuidora
     template_name = "website/distribuidora.html"
     context_object_name = "dists"
-    login_url = "/login/"
+    login_url = "/farmacia/login/"
+
+
+class DistribuidoraDetail(LoginRequiredMixin, DetailView):
+    model = Distribuidora
+    template_name = "website/detalhe.html"
+    login_url = "/farmacia/login/"
 
 
 class DistribuidoraCreate(FarmaciaLoginMixin, CreateView):
     model = Distribuidora
     form_class = DistribuidoraForm
     template_name = "website/form.html"
-    success_url = reverse_lazy("dist_listar")
+    success_url = reverse_lazy("distribuidora_listar")
     extra_context = {"titulo": "Nova Distribuidora", "botao": "Criar Distribuidora"}
 
 
@@ -109,15 +121,15 @@ class DistribuidoraUpdate(FarmaciaLoginMixin, UpdateView):
     model = Distribuidora
     form_class = DistribuidoraForm
     template_name = "website/form.html"
-    success_url = reverse_lazy("dist_listar")
+    success_url = reverse_lazy("distribuidora_listar")
     extra_context = {"titulo": "Editar Distribuidora", "botao": "Salvar Alterações"}
 
 
 class DistribuidoraDelete(LoginRequiredMixin, DeleteView):
     model = Distribuidora
     template_name = "website/form.html"
-    success_url = reverse_lazy("dist_listar")
-    login_url = "/login/"
+    success_url = reverse_lazy("distribuidora_listar")
+    login_url = "/farmacia/login/"
     extra_context = {"titulo": "Excluir Distribuidora", "botao": "Sim, excluir!"}
 
 
@@ -126,14 +138,20 @@ class MedicamentoList(LoginRequiredMixin, ListView):
     model = Medicamento
     template_name = "website/medicamento.html"
     context_object_name = "meds"
-    login_url = "/login/"
+    login_url = "/farmacia/login/"
+
+
+class MedicamentoDetail(LoginRequiredMixin, DetailView):
+    model = Medicamento
+    template_name = "website/detalhe.html"
+    login_url = "/farmacia/login/"
 
 
 class MedicamentoCreate(FarmaciaLoginMixin, CreateView):
     model = Medicamento
     form_class = MedicamentoForm
     template_name = "website/form.html"
-    success_url = reverse_lazy("med_listar")
+    success_url = reverse_lazy("medicamento_listar")
     extra_context = {"titulo": "Novo Medicamento", "botao": "Criar Medicamento", "largura": 8}
 
 
@@ -141,15 +159,15 @@ class MedicamentoUpdate(FarmaciaLoginMixin, UpdateView):
     model = Medicamento
     form_class = MedicamentoForm
     template_name = "website/form.html"
-    success_url = reverse_lazy("med_listar")
+    success_url = reverse_lazy("medicamento_listar")
     extra_context = {"titulo": "Editar Medicamento", "botao": "Salvar Alterações", "largura": 8}
 
 
 class MedicamentoDelete(LoginRequiredMixin, DeleteView):
     model = Medicamento
     template_name = "website/form.html"
-    success_url = reverse_lazy("med_listar")
-    login_url = "/login/"
+    success_url = reverse_lazy("medicamento_listar")
+    login_url = "/farmacia/login/"
     extra_context = {"titulo": "Excluir Medicamento", "botao": "Sim, excluir!"}
 
 
@@ -158,14 +176,20 @@ class ProdutoDiversoList(LoginRequiredMixin, ListView):
     model = ProdutoDiverso
     template_name = "website/produto.html"
     context_object_name = "prods"
-    login_url = "/login/"
+    login_url = "/farmacia/login/"
+
+
+class ProdutoDiversoDetail(LoginRequiredMixin, DetailView):
+    model = ProdutoDiverso
+    template_name = "website/detalhe.html"
+    login_url = "/farmacia/login/"
 
 
 class ProdutoDiversoCreate(FarmaciaLoginMixin, CreateView):
     model = ProdutoDiverso
     form_class = ProdutoDiversoForm
     template_name = "website/form.html"
-    success_url = reverse_lazy("prod_listar")
+    success_url = reverse_lazy("produto_listar")
     extra_context = {"titulo": "Novo Produto", "botao": "Criar Produto"}
 
 
@@ -173,15 +197,15 @@ class ProdutoDiversoUpdate(FarmaciaLoginMixin, UpdateView):
     model = ProdutoDiverso
     form_class = ProdutoDiversoForm
     template_name = "website/form.html"
-    success_url = reverse_lazy("prod_listar")
+    success_url = reverse_lazy("produto_listar")
     extra_context = {"titulo": "Editar Produto", "botao": "Salvar Alterações"}
 
 
 class ProdutoDiversoDelete(LoginRequiredMixin, DeleteView):
     model = ProdutoDiverso
     template_name = "website/form.html"
-    success_url = reverse_lazy("prod_listar")
-    login_url = "/login/"
+    success_url = reverse_lazy("produto_listar")
+    login_url = "/farmacia/login/"
     extra_context = {"titulo": "Excluir Produto", "botao": "Sim, excluir!"}
 
 
@@ -190,15 +214,21 @@ class UsuarioList(LoginRequiredMixin, ListView):
     model = User
     template_name = "website/usuario.html"
     context_object_name = "usuarios"
-    login_url = "/login/"
+    login_url = "/farmacia/login/"
+
+
+class UsuarioDetail(LoginRequiredMixin, DetailView):
+    model = User
+    template_name = "website/detalhe.html"
+    login_url = "/farmacia/login/"
 
 
 class UsuarioCreate(LoginRequiredMixin, CreateView):
     model = User
     form_class = UsuarioForm
     template_name = "website/form.html"
-    success_url = reverse_lazy("usr_listar")
-    login_url = "/login/"
+    success_url = reverse_lazy("usuario_listar")
+    login_url = "/farmacia/login/"
     extra_context = {"titulo": "Novo Usuário", "botao": "Criar Usuário"}
 
 
@@ -206,16 +236,16 @@ class UsuarioUpdate(LoginRequiredMixin, UpdateView):
     model = User
     form_class = UsuarioForm
     template_name = "website/form.html"
-    success_url = reverse_lazy("usr_listar")
-    login_url = "/login/"
+    success_url = reverse_lazy("usuario_listar")
+    login_url = "/farmacia/login/"
     extra_context = {"titulo": "Editar Usuário", "botao": "Salvar Alterações"}
 
 
 class UsuarioDelete(LoginRequiredMixin, DeleteView):
     model = User
     template_name = "website/form.html"
-    success_url = reverse_lazy("usr_listar")
-    login_url = "/login/"
+    success_url = reverse_lazy("usuario_listar")
+    login_url = "/farmacia/login/"
     extra_context = {"titulo": "Excluir Usuário", "botao": "Sim, excluir!"}
 
 
@@ -224,15 +254,21 @@ class GrupoList(LoginRequiredMixin, ListView):
     model = Group
     template_name = "website/grupo.html"
     context_object_name = "grupos"
-    login_url = "/login/"
+    login_url = "/farmacia/login/"
+
+
+class GrupoDetail(LoginRequiredMixin, DetailView):
+    model = Group
+    template_name = "website/detalhe.html"
+    login_url = "/farmacia/login/"
 
 
 class GrupoCreate(LoginRequiredMixin, CreateView):
     model = Group
     form_class = GrupoForm
     template_name = "website/form.html"
-    success_url = reverse_lazy("grp_listar")
-    login_url = "/login/"
+    success_url = reverse_lazy("grupo_listar")
+    login_url = "/farmacia/login/"
     extra_context = {"titulo": "Novo Grupo", "botao": "Criar Grupo"}
 
 
@@ -240,14 +276,14 @@ class GrupoUpdate(LoginRequiredMixin, UpdateView):
     model = Group
     form_class = GrupoForm
     template_name = "website/form.html"
-    success_url = reverse_lazy("grp_listar")
-    login_url = "/login/"
+    success_url = reverse_lazy("grupo_listar")
+    login_url = "/farmacia/login/"
     extra_context = {"titulo": "Editar Grupo", "botao": "Salvar Alterações"}
 
 
 class GrupoDelete(LoginRequiredMixin, DeleteView):
     model = Group
     template_name = "website/form.html"
-    success_url = reverse_lazy("grp_listar")
-    login_url = "/login/"
+    success_url = reverse_lazy("grupo_listar")
+    login_url = "/farmacia/login/"
     extra_context = {"titulo": "Excluir Grupo", "botao": "Sim, excluir!"}

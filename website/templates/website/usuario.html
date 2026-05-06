@@ -1,49 +1,83 @@
-{% extends "website/modelo.html" %} {% block titulo %}Usuários{% endblock %} {%
-block conteudo %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h5 class="mb-0">Usuários</h5>
-  <a href="{% url 'usr_novo' %}" class="btn btn-primary btn-sm">+ Novo</a>
+{% extends "website/modelo.html" %}
+
+{% block titulo %}Usuários — PharmaSys{% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">Usuários</li>
+{% endblock %}
+
+{% block conteudo %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="section-title mb-0"><i class="bi bi-people"></i>Usuários</h2>
+  <a href="{% url 'usr_novo' %}" class="btn btn-primary d-flex align-items-center gap-2">
+    <i class="bi bi-plus-lg"></i>Novo
+  </a>
 </div>
 
-<div class="card">
-  <table>
-    <thead>
-      <tr>
-        <th>Usuário</th>
-        <th>Nome</th>
-        <th>E-mail</th>
-        <th>Admin</th>
-        <th>Ativo</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for u in usuarios %}
-      <tr>
-        <td>{{ u.username }}</td>
-        <td>{{ u.get_full_name|default:"—" }}</td>
-        <td>{{ u.email|default:"—" }}</td>
-        <td>{% if u.is_staff %}✅{% else %}—{% endif %}</td>
-        <td>{% if u.is_active %}✅{% else %}❌{% endif %}</td>
-        <td>
-          <a href="{% url 'usr_editar' u.pk %}" class="btn btn-sm btn-secondary"
-            >Editar</a
-          >
-          {% if u != request.user %}
-          <a href="{% url 'usr_excluir' u.pk %}" class="btn btn-sm btn-danger"
-            >Excluir</a
-          >
-          {% endif %}
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="6" class="text-center text-muted py-3">
-          Nenhum usuário encontrado.
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-pharma mb-0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Usuário</th>
+          <th>Nome</th>
+          <th>E-mail</th>
+          <th>Admin</th>
+          <th>Ativo</th>
+          <th class="text-center">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in usuarios %}
+        <tr>
+          <td>{{ u.pk }}</td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <span class="avatar">{{ u.username|slice:":2"|upper }}</span>
+              <strong>{{ u.username }}</strong>
+            </div>
+          </td>
+          <td>{{ u.get_full_name|default:"—" }}</td>
+          <td>{{ u.email|default:"—" }}</td>
+          <td>
+            {% if u.is_staff %}
+              <span class="badge-s s-ativo"><i class="bi bi-shield-check me-1"></i>Sim</span>
+            {% else %}
+              <span style="color:var(--clr-muted)">—</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if u.is_active %}
+              <span class="badge-s s-ativo"><i class="bi bi-check-circle me-1"></i>Ativo</span>
+            {% else %}
+              <span class="badge-s s-inativo"><i class="bi bi-x-circle me-1"></i>Inativo</span>
+            {% endif %}
+          </td>
+          <td class="text-center">
+            <div class="dropdown">
+              <button class="btn btn-link btn-sm text-muted p-0" data-bs-toggle="dropdown">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{% url 'usr_editar' u.pk %}"><i class="bi bi-pencil me-2"></i>Editar</a></li>
+                {% if u != request.user %}
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="{% url 'usr_excluir' u.pk %}"><i class="bi bi-trash me-2"></i>Excluir</a></li>
+                {% endif %}
+              </ul>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="text-center py-4 text-muted">
+            <i class="bi bi-inbox fs-3 d-block mb-2"></i>Nenhum usuário encontrado.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}

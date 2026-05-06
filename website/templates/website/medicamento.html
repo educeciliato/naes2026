@@ -1,47 +1,72 @@
-{% extends "website/modelo.html" %} {% block titulo %}Medicamentos{% endblock %}
+{% extends "website/modelo.html" %}
+
+{% block titulo %}Medicamentos — PharmaSys{% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">Medicamentos</li>
+{% endblock %}
+
 {% block conteudo %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h5 class="mb-0">Medicamentos</h5>
-  <a href="{% url 'med_novo' %}" class="btn btn-primary btn-sm">+ Novo</a>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="section-title mb-0"><i class="bi bi-capsule"></i>Medicamentos</h2>
+  <a href="{% url 'med_novo' %}" class="btn btn-primary d-flex align-items-center gap-2">
+    <i class="bi bi-plus-lg"></i>Novo
+  </a>
 </div>
 
-<div class="card">
-  <table>
-    <thead>
-      <tr>
-        <th>Nome</th>
-        <th>Lote</th>
-        <th>Validade</th>
-        <th>Qtd</th>
-        <th>Controlado</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for m in meds %}
-      <tr>
-        <td>{{ m.nome }}</td>
-        <td>{{ m.lote }}</td>
-        <td>{{ m.data_validade|date:"d/m/Y" }}</td>
-        <td>{{ m.quantidade }}</td>
-        <td>{% if m.controlado %}⚠️ Sim{% else %}Não{% endif %}</td>
-        <td>
-          <a href="{% url 'med_editar' m.pk %}" class="btn btn-sm btn-secondary"
-            >Editar</a
-          >
-          <a href="{% url 'med_excluir' m.pk %}" class="btn btn-sm btn-danger"
-            >Excluir</a
-          >
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="6" class="text-center text-muted py-3">
-          Nenhum medicamento cadastrado.
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-pharma mb-0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Lote</th>
+          <th>Validade</th>
+          <th>Qtd</th>
+          <th>Controlado</th>
+          <th>Laboratório</th>
+          <th class="text-center">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in meds %}
+        <tr>
+          <td>{{ m.pk }}</td>
+          <td><strong>{{ m.nome }}</strong></td>
+          <td>{{ m.lote }}</td>
+          <td>{{ m.data_validade|date:"d/m/Y" }}</td>
+          <td>{{ m.quantidade }}</td>
+          <td>
+            {% if m.controlado %}
+              <span class="badge-s s-controlado"><i class="bi bi-exclamation-triangle me-1"></i>Sim</span>
+            {% else %}
+              <span class="badge-s s-ativo">Não</span>
+            {% endif %}
+          </td>
+          <td>{{ m.laboratorio }}</td>
+          <td class="text-center">
+            <div class="dropdown">
+              <button class="btn btn-link btn-sm text-muted p-0" data-bs-toggle="dropdown">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{% url 'med_editar' m.pk %}"><i class="bi bi-pencil me-2"></i>Editar</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="{% url 'med_excluir' m.pk %}"><i class="bi bi-trash me-2"></i>Excluir</a></li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8" class="text-center py-4 text-muted">
+            <i class="bi bi-inbox fs-3 d-block mb-2"></i>Nenhum medicamento cadastrado.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}
