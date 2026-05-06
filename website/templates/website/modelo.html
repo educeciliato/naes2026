@@ -1,77 +1,159 @@
 {% load static %}
-<!doctype html>
-<html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block titulo %}PharmaSys{% endblock %}</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="{% static 'css/estilo.css' %}" />
-  </head>
-  <body>
-    {% if user.is_authenticated %}
-    <nav class="navbar navbar-expand-lg">
-      <div class="container">
-        <a class="navbar-brand fw-bold" href="{% url 'dashboard' %}"
-          >💊 PharmaSys</a
-        >
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#nav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="nav">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'med_listar' %}">Medicamentos</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'prod_listar' %}">Produtos</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'lab_listar' %}">Laboratórios</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'dist_listar' %}"
-                >Distribuidoras</a
-              >
-            </li>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block titulo %}PharmaSys{% endblock %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Saira:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/pharma.css' %}">
+
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top">
+  <div class="container-xl">
+
+    <a class="navbar-brand" href="{% url 'dashboard' %}">
+      <i class="bi bi-capsule-pill" style="color:var(--clr-primary)"></i>
+      PharmaSys
+    </a>
+
+    <button class="navbar-toggler border-0 shadow-none" type="button"
+            data-bs-toggle="collapse" data-bs-target="#navMenu"
+            style="color:var(--clr-muted)">
+      <i class="bi bi-list fs-4"></i>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav me-auto gap-1 py-2 py-lg-0">
+
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+             href="{% url 'dashboard' %}">
+            <i class="bi bi-speedometer2"></i>Dashboard
+          </a>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-plus-circle"></i>Cadastrar
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'med_novo' %}"><i class="bi bi-capsule me-2" style="color:var(--clr-primary)"></i>Medicamento</a></li>
+            <li><a class="dropdown-item" href="{% url 'prod_novo' %}"><i class="bi bi-box me-2" style="color:var(--clr-primary)"></i>Produto Diverso</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'lab_novo' %}"><i class="bi bi-building me-2" style="color:var(--clr-primary)"></i>Laboratório</a></li>
+            <li><a class="dropdown-item" href="{% url 'dist_novo' %}"><i class="bi bi-truck me-2" style="color:var(--clr-primary)"></i>Distribuidora</a></li>
+          </ul>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-list-ul"></i>Listar
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'med_listar' %}"><i class="bi bi-capsule me-2" style="color:var(--clr-primary)"></i>Medicamentos</a></li>
+            <li><a class="dropdown-item" href="{% url 'prod_listar' %}"><i class="bi bi-box me-2" style="color:var(--clr-primary)"></i>Produtos Diversos</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'lab_listar' %}"><i class="bi bi-building me-2" style="color:var(--clr-primary)"></i>Laboratórios</a></li>
+            <li><a class="dropdown-item" href="{% url 'dist_listar' %}"><i class="bi bi-truck me-2" style="color:var(--clr-primary)"></i>Distribuidoras</a></li>
             {% if user.is_staff %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'usr_listar' %}">Usuários</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'grp_listar' %}">Grupos</a>
-            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'usr_listar' %}"><i class="bi bi-people me-2" style="color:var(--clr-primary)"></i>Usuários</a></li>
+            <li><a class="dropdown-item" href="{% url 'grp_listar' %}"><i class="bi bi-shield-lock me-2" style="color:var(--clr-primary)"></i>Grupos</a></li>
             {% endif %}
           </ul>
-          <span class="nav-link text-white-50">{{ user.username }}</span>
-          <a class="nav-link" href="{% url 'logout' %}">Sair</a>
+        </li>
+
+      </ul>
+
+      {% if user.is_authenticated %}
+      <div class="d-flex align-items-center gap-2 py-2 py-lg-0">
+        <div class="dropdown">
+          <a class="user-pill dropdown-toggle" role="button" data-bs-toggle="dropdown">
+            <span class="avatar">{{ user.username|slice:":2"|upper }}</span>
+            <span class="d-none d-sm-inline">{{ user.username }}</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><span class="dropdown-header">{{ user.get_full_name|default:user.username }}</span></li>
+            {% if user.is_staff %}
+            <li><a class="dropdown-item" href="{% url 'usr_listar' %}"><i class="bi bi-people me-2"></i>Usuários</a></li>
+            <li><a class="dropdown-item" href="{% url 'grp_listar' %}"><i class="bi bi-shield-lock me-2"></i>Grupos</a></li>
+            <li><hr class="dropdown-divider"></li>
+            {% endif %}
+            <li>
+              <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="dropdown-item text-danger">
+                  <i class="bi bi-box-arrow-right me-2"></i>Sair
+                </button>
+              </form>
+            </li>
+          </ul>
         </div>
       </div>
-    </nav>
-    {% endif %}
-
-    <div class="container-main">
-      {% if messages %} {% for msg in messages %}
-      <div
-        class="{% if msg.tags == 'error' %}msg-err{% else %}msg-ok{% endif %}"
-      >
-        {{ msg }}
-      </div>
-      {% endfor %} {% endif %} {% block conteudo %}{% endblock %}
+      {% endif %}
     </div>
+  </div>
+</nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+<div id="main-wrapper">
+
+  {% if messages %}
+  <div class="toast-stack">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+      {% if message.tags == 'success' %}<i class="bi bi-check-circle me-1"></i>{% endif %}
+      {% if message.tags == 'error' %}<i class="bi bi-x-circle me-1"></i>{% endif %}
+      {{ message }}
+      <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <main id="page-content">
+    <div class="container-xl">
+      <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Início</a></li>
+          {% block breadcrumb %}{% endblock %}
+        </ol>
+      </nav>
+
+      {% block conteudo %}{% endblock %}
+    </div>
+  </main>
+
+  <footer>
+    <div class="container-xl d-flex align-items-center justify-content-between w-100">
+      <span>
+        <i class="bi bi-capsule-pill me-1" style="color:var(--clr-primary)"></i>
+        PharmaSys &copy; 2026 — Sistema de Gestão de Farmácia
+      </span>
+      <span class="d-none d-sm-inline">v1.0.0</span>
+    </div>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.querySelectorAll('.toast-stack .alert').forEach(el => {
+    setTimeout(() => {
+      const alert = bootstrap.Alert.getOrCreateInstance(el);
+      if (alert) alert.close();
+    }, 4000);
+  });
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
 </html>
