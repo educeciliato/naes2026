@@ -81,13 +81,10 @@ WSGI_APPLICATION = 'naes2026.wsgi.application'
 
 # Configure database from environment variable DATABASE_URL (PostgreSQL)
 # Never commit real credentials to source control. Set DATABASE_URL in env.
-DATABASE_URL = os.environ.get('postgresql://neondb_owner:npg_FAlIq4RE5LZn@ep-lingering-glade-ac7bddn4-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require')
-if not DATABASE_URL:
-    raise Exception(
-        "DATABASE_URL environment variable not set. Configure PostgreSQL connection (Neon.tech)"
-    )
+from urllib.parse import urlparse, parse_qsl
 
-# Parse DATABASE_URL and build DATABASES dict
+DATABASE_URL = 'postgresql://neondb_owner:npg_FAlIq4RE5LZn@ep-lingering-glade-ac7bddn4-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
+
 tmpPostgres = urlparse(DATABASE_URL)
 
 DATABASES = {
@@ -101,7 +98,6 @@ DATABASES = {
         'OPTIONS': dict(parse_qsl(tmpPostgres.query)),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
