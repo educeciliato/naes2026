@@ -1,25 +1,37 @@
 {% extends "website/modelo.html" %}
-
+{# Titulo #}
 {% block titulo %}Dashboard — PharmaSys{% endblock %}
-
+{# Breadcrumb #}
 {% block breadcrumb %}
-  <li class="breadcrumb-item active">Dashboard</li>
+<li class="breadcrumb-item active">Dashboard</li>
 {% endblock %}
-
+{# Conteudo #}
 {% block conteudo %}
 <div class="section-header mb-4">
   <h2 class="section-title"><i class="bi bi-speedometer2"></i>Dashboard</h2>
   <div class="d-flex gap-2 flex-wrap">
-    <a href="{% url 'med_novo' %}" class="btn btn-primary btn-sm d-flex align-items-center gap-1">
+    <a
+      href="{% url 'medicamento_novo' %}"
+      class="btn btn-primary btn-sm d-flex align-items-center gap-1"
+    >
       <i class="bi bi-plus-lg"></i>Medicamento
     </a>
-    <a href="{% url 'prod_novo' %}" class="btn btn-success btn-sm d-flex align-items-center gap-1">
+    <a
+      href="{% url 'produto_novo' %}"
+      class="btn btn-success btn-sm d-flex align-items-center gap-1"
+    >
       <i class="bi bi-plus-lg"></i>Produto
     </a>
-    <a href="{% url 'lab_novo' %}" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1">
+    <a
+      href="{% url 'laboratorio_novo' %}"
+      class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+    >
       <i class="bi bi-plus-lg"></i>Laboratório
     </a>
-    <a href="{% url 'dist_novo' %}" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1">
+    <a
+      href="{% url 'distribuidora_novo' %}"
+      class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+    >
       <i class="bi bi-plus-lg"></i>Distribuidora
     </a>
   </div>
@@ -27,7 +39,7 @@
 
 <div class="row g-3 mb-4">
   <div class="col-6 col-lg-3">
-    <a href="{% url 'med_listar' %}" class="text-decoration-none">
+    <a href="{% url 'medicamento_listar' %}" class="text-decoration-none">
       <div class="kpi-card">
         <div class="kpi-icon blue"><i class="bi bi-capsule"></i></div>
         <div>
@@ -38,7 +50,7 @@
     </a>
   </div>
   <div class="col-6 col-lg-3">
-    <a href="{% url 'prod_listar' %}" class="text-decoration-none">
+    <a href="{% url 'medicamento_listar' %}" class="text-decoration-none">
       <div class="kpi-card">
         <div class="kpi-icon green"><i class="bi bi-box-seam"></i></div>
         <div>
@@ -49,7 +61,7 @@
     </a>
   </div>
   <div class="col-6 col-lg-3">
-    <a href="{% url 'lab_listar' %}" class="text-decoration-none">
+    <a href="{% url 'laboratorio_listar' %}" class="text-decoration-none">
       <div class="kpi-card">
         <div class="kpi-icon yellow"><i class="bi bi-building"></i></div>
         <div>
@@ -60,7 +72,7 @@
     </a>
   </div>
   <div class="col-6 col-lg-3">
-    <a href="{% url 'dist_listar' %}" class="text-decoration-none">
+    <a href="{% url 'distribuidora_listar' %}" class="text-decoration-none">
       <div class="kpi-card">
         <div class="kpi-icon pink"><i class="bi bi-truck"></i></div>
         <div>
@@ -75,28 +87,44 @@
 <div class="card shadow-sm">
   <div class="card-header">
     <span class="card-title">
-      <i class="bi bi-lightning-charge me-2" style="color:var(--clr-primary)"></i>Acesso Rápido
+      <i
+        class="bi bi-lightning-charge me-2"
+        style="color: var(--clr-primary)"
+      ></i
+      >Acesso Rápido
     </span>
   </div>
   <div class="card-body">
     <div class="row g-3">
       <div class="col-sm-6 col-lg-3">
-        <a href="{% url 'med_listar' %}" class="btn btn-outline-primary w-100 d-flex align-items-center gap-2">
+        <a
+          href="{% url 'medicamento_listar' %}"
+          class="btn btn-outline-primary w-100 d-flex align-items-center gap-2"
+        >
           <i class="bi bi-capsule fs-5"></i><span>Ver Medicamentos</span>
         </a>
       </div>
       <div class="col-sm-6 col-lg-3">
-        <a href="{% url 'prod_listar' %}" class="btn btn-outline-success w-100 d-flex align-items-center gap-2">
+        <a
+          href="{% url 'produto_listar' %}"
+          class="btn btn-outline-success w-100 d-flex align-items-center gap-2"
+        >
           <i class="bi bi-box-seam fs-5"></i><span>Ver Produtos</span>
         </a>
       </div>
       <div class="col-sm-6 col-lg-3">
-        <a href="{% url 'lab_listar' %}" class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2">
+        <a
+          href="{% url 'laboratorio_listar' %}"
+          class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2"
+        >
           <i class="bi bi-building fs-5"></i><span>Ver Laboratórios</span>
         </a>
       </div>
       <div class="col-sm-6 col-lg-3">
-        <a href="{% url 'dist_listar' %}" class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2">
+        <a
+          href="{% url 'distribuidora_listar' %}"
+          class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2"
+        >
           <i class="bi bi-truck fs-5"></i><span>Ver Distribuidoras</span>
         </a>
       </div>
