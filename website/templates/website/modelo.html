@@ -101,6 +101,15 @@
                     >Distribuidora</a
                   >
                 </li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'farmacia_novo' %}"
+                    ><i
+                      class="bi bi-shop me-2"
+                      style="color: var(--clr-primary)"
+                    ></i
+                    >Farmácia</a
+                  >
+                </li>
               </ul>
             </li>
 
@@ -114,6 +123,15 @@
                 <i class="bi bi-list-ul"></i>Listar
               </a>
               <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="{% url 'farmacia_listar' %}"
+                    ><i
+                      class="bi bi-shop me-2"
+                      style="color: var(--clr-primary)"
+                    ></i
+                    >Farmácias</a
+                  >
+                </li>
                 <li>
                   <a class="dropdown-item" href="{% url 'medicamento_listar' %}"
                     ><i

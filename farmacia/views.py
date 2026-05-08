@@ -8,9 +8,9 @@ from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.shortcuts import render, redirect
 
-from .models import Laboratorio, Distribuidora, Medicamento, ProdutoDiverso
+from .models import Laboratorio, Distribuidora, Medicamento, ProdutoDiverso, Farmacia
 from .forms  import (LaboratorioForm, DistribuidoraForm, MedicamentoForm,
-                     ProdutoDiversoForm, UsuarioForm, GrupoForm)
+                     ProdutoDiversoForm, UsuarioForm, GrupoForm, FarmaciaForm)
 
 
 # ── Auth ────────────────────────────────────────────────────────────────────
@@ -287,3 +287,41 @@ class GrupoDelete(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("grupo_listar")
     login_url = "/farmacia/login/"
     extra_context = {"titulo": "Excluir Grupo", "botao": "Sim, excluir!"}
+
+
+# ── Farmácias ───────────────────────────────────────────────────────────────
+class FarmaciaList(LoginRequiredMixin, ListView):
+    model = Farmacia
+    template_name = "website/farmacia.html"
+    context_object_name = "farmacias"
+    login_url = "/farmacia/login/"
+
+
+class FarmaciaDetail(LoginRequiredMixin, DetailView):
+    model = Farmacia
+    template_name = "website/detalhe.html"
+    login_url = "/farmacia/login/"
+
+
+class FarmaciaCreate(FarmaciaLoginMixin, CreateView):
+    model = Farmacia
+    form_class = FarmaciaForm
+    template_name = "website/form.html"
+    success_url = reverse_lazy("farmacia_listar")
+    extra_context = {"titulo": "Nova Farmácia", "botao": "Criar Farmácia"}
+
+
+class FarmaciaUpdate(FarmaciaLoginMixin, UpdateView):
+    model = Farmacia
+    form_class = FarmaciaForm
+    template_name = "website/form.html"
+    success_url = reverse_lazy("farmacia_listar")
+    extra_context = {"titulo": "Editar Farmácia", "botao": "Salvar Alterações"}
+
+
+class FarmaciaDelete(LoginRequiredMixin, DeleteView):
+    model = Farmacia
+    template_name = "website/form.html"
+    success_url = reverse_lazy("farmacia_listar")
+    login_url = "/farmacia/login/"
+    extra_context = {"titulo": "Excluir Farmácia", "botao": "Sim, excluir!"}

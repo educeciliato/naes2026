@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'naes2026.wsgi.application'
 # Never commit real credentials to source control. Set DATABASE_URL in env.
 from urllib.parse import urlparse, parse_qsl
 
-DATABASE_URL = 'postgresql://neondb_owner:npg_FAlIq4RE5LZn@ep-lingering-glade-ac7bddn4-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
+DATABASE_URL = 'postgresql://neondb_owner:npg_nzZp8BNihqK5@ep-solitary-unit-acy2l56c-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
 
 tmpPostgres = urlparse(DATABASE_URL)
 

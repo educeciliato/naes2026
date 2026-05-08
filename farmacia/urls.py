@@ -41,6 +41,13 @@ urlpatterns = [
     path("usuario/<int:pk>/excluir/", views.UsuarioDelete.as_view(), name="usuario_excluir"),
     path("usuario/<int:pk>/",         views.UsuarioDetail.as_view(), name="usuario_detalhe"),
 
+    # Farmácias
+    path("farmacia/",                  views.FarmaciaList.as_view(),   name="farmacia_listar"),
+    path("farmacia/novo/",             views.FarmaciaCreate.as_view(), name="farmacia_novo"),
+    path("farmacia/<int:pk>/editar/",  views.FarmaciaUpdate.as_view(), name="farmacia_editar"),
+    path("farmacia/<int:pk>/excluir/", views.FarmaciaDelete.as_view(), name="farmacia_excluir"),
+    path("farmacia/<int:pk>/",         views.FarmaciaDetail.as_view(), name="farmacia_detalhe"),
+
     # Grupos
     path("grupo/",                  views.GrupoList.as_view(),   name="grupo_listar"),
     path("grupo/novo/",             views.GrupoCreate.as_view(), name="grupo_novo"),

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import UserCreationForm
-from .models import Laboratorio, Distribuidora, Medicamento, ProdutoDiverso
+from .models import Laboratorio, Distribuidora, Medicamento, ProdutoDiverso, Farmacia
 
 FIELD_CLASS = {"class": "form-control"}
 CHECK_CLASS = {"class": "form-check-input"}
@@ -75,3 +75,17 @@ class GrupoForm(forms.ModelForm):
         model  = Group
         fields = ["name"]
         widgets = {"name": forms.TextInput(attrs=FIELD_CLASS)}
+
+
+class FarmaciaForm(forms.ModelForm):
+    class Meta:
+        model = Farmacia
+        fields = ["nome_proprietario", "cidade", "estado", "cnpj", "endereco", "grupo"]
+        widgets = {
+            "nome_proprietario": forms.TextInput(attrs=FIELD_CLASS),
+            "cidade": forms.TextInput(attrs=FIELD_CLASS),
+            "estado": forms.TextInput(attrs={**FIELD_CLASS, "maxlength": 2}),
+            "cnpj": forms.TextInput(attrs=FIELD_CLASS),
+            "endereco": forms.TextInput(attrs=FIELD_CLASS),
+            "grupo": forms.Select(attrs=FIELD_CLASS),
+        }
