@@ -116,6 +116,12 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+# Para onde o Django redireciona usuários não autenticados
+LOGIN_URL = '/login/'
+# Para onde vai após login bem-sucedido (se não houver ?next=)
+LOGIN_REDIRECT_URL = '/farmacia/'
+# Para onde vai após logout
+LOGOUT_REDIRECT_URL = '/'
 
 
 # Internationalization
