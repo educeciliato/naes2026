@@ -25,5 +25,5 @@ automatic_scaling:
 env_variables:
 
   DJANGO_SETTINGS_MODULE: "naes2026.settings"
-
+  DATABASE_URL: "postgresql://neondb_owner:npg_nzZp8BNihqK5@ep-solitary-unit-acy2l56c-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
   # Substitua "SEUPROJETO" pelo nome do seu projeto Django (o mesmo nome da pasta que tem o arquivo settings.py)
