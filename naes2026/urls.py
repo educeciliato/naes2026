@@ -1,16 +1,20 @@
+from django.conf import settings
 from django.contrib import admin
-from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('__debug__/', include('debug_toolbar.urls')),  # ← debug toolbar
 
     # Website (páginas públicas + auth)
     path('', include('website.urls')),
 
     # Farmácia (dashboard e CRUDs)
     path('farmacia/', include('farmacia.urls')),
+
+    # IA (única porta de entrada) e assistente virtual
+    path('ia/', include('ia.urls')),
+    path('assistente/', include('assistente.urls')),
 
     # Alteração de senha (views built-in do Django)
     path('senha/alterar/',
@@ -25,3 +29,7 @@ urlpatterns = [
          ),
          name='password_change_done'),
 ]
+
+# Debug Toolbar só existe quando está instalada (DEBUG=True e fora dos testes).
+if 'debug_toolbar' in settings.INSTALLED_APPS:
+    urlpatterns.append(path('__debug__/', include('debug_toolbar.urls')))

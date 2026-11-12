@@ -1,0 +1,22 @@
+{% comment %}
+  Menu de ações de uma linha da tabela.
+  Variáveis: obj, url_detalhe, url_editar, url_excluir (use {% url ... as url_x %} antes do include).
+  "Excluir" é um POST com confirmação no modal do Bootbox (data-confirmar, ver static/js/site.js).
+{% endcomment %}
+<div class="dropdown">
+  <button class="btn btn-link btn-sm text-muted p-0" data-bs-toggle="dropdown" aria-label="Ações de {{ obj }}">
+    <i class="bi bi-three-dots-vertical"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><a class="dropdown-item" href="{{ url_detalhe }}"><i class="bi bi-eye me-2"></i>Detalhes</a></li>
+    <li><a class="dropdown-item" href="{{ url_editar }}"><i class="bi bi-pencil me-2"></i>Editar</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li>
+      <form method="post" action="{{ url_excluir }}" class="m-0"
+            data-confirmar="Excluir “{{ obj }}”? Esta ação não pode ser desfeita." data-confirmar-classe="btn-danger">
+        {% csrf_token %}
+        <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Excluir</button>
+      </form>
+    </li>
+  </ul>
+</div>

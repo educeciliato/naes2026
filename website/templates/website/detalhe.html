@@ -1,24 +1,41 @@
 {% extends "website/modelo.html" %}
-{% load static %}
 
-{% block titulo %}Detalhe — PharmaSys{% endblock %}
+{% block titulo %}{{ object }} — PharmaSys{% endblock %}
 
 {% block breadcrumb %}
-  <li class="breadcrumb-item"><a href="{ % url 'dashboard' % }">Início</a></li>
-  <li class="breadcrumb-item active" aria-current="page">Detalhe</li>
+  <li class="breadcrumb-item"><a href="{{ url_listar }}">{{ nome_plural|capfirst }}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{{ object }}</li>
 {% endblock breadcrumb %}
 
 {% block conteudo %}
 <div class="row justify-content-center">
-  <div class="col-md-8">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h4 class="mb-3">Detalhe</h4>
-        <p class="text-secondary mb-3">{{ object._meta.verbose_name }} — {{ object }}</p>
-        <pre class="small">{{ object }}</pre>
-        <div class="d-flex gap-2">
-          <a href="#" class="btn btn-outline-secondary" onclick="window.history.back()">Voltar</a>
-        </div>
+  <div class="col-lg-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-gradient-primary py-3 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0 text-white stencil" style="font-size:1.3rem;">{{ object }}</h4>
+        <span class="badge bg-light text-dark">{{ nome_modelo|capfirst }}</span>
+      </div>
+      <div class="card-body p-4">
+        <dl class="row detalhe-lista mb-0">
+          {% for rotulo, valor in campos %}
+            <dt class="col-sm-4">{{ rotulo|capfirst }}</dt>
+            <dd class="col-sm-8">
+              {% if valor is True %}<span class="badge-s s-ativo">Sim</span>
+              {% elif valor is False %}<span class="badge-s s-inativo">Não</span>
+              {% elif valor is None or valor == "" %}<span class="text-muted">—</span>
+              {% else %}{{ valor }}{% endif %}
+            </dd>
+          {% endfor %}
+        </dl>
+      </div>
+      <div class="card-footer bg-white d-flex flex-wrap gap-2 py-3">
+        <a href="{{ url_editar }}" class="btn btn-primary"><i class="bi bi-pencil me-1"></i>Editar</a>
+        <form method="post" action="{{ url_excluir }}" class="m-0"
+              data-confirmar="Excluir “{{ object }}”? Esta ação não pode ser desfeita." data-confirmar-classe="btn-danger">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-danger"><i class="bi bi-trash me-1"></i>Excluir</button>
+        </form>
+        <a href="{{ url_listar }}" class="btn btn-outline-secondary ms-auto"><i class="bi bi-arrow-left me-1"></i>Voltar à lista</a>
       </div>
     </div>
   </div>

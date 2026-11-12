@@ -1,429 +1,462 @@
-from django.views.generic import CreateView, UpdateView, DeleteView, ListView
-from django.views.generic.detail import DetailView
-from django.urls import reverse_lazy
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.models import User, Group
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from django.utils import timezone
-from django.http import Http404
+"""Views do PharmaSys (dashboard e CRUDs).
 
-from .models import Laboratorio, Distribuidora, Medicamento, ProdutoDiverso, Farmacia
-from .forms  import (LaboratorioForm, DistribuidoraForm, MedicamentoForm,
-                     ProdutoDiversoForm, UsuarioForm, GrupoForm, FarmaciaForm)
+Segurança por dono: Laboratório, Distribuidora, Medicamento, Produto Diverso
+e Farmácia pertencem a quem os cadastrou (``cadastrado_por``). A fronteira é
+o ``get_queryset()`` filtrado pelo usuário logado (``DonoQuerysetMixin``):
+registro de outra pessoa dá 404 em detalhe, edição e exclusão, e não aparece
+nas listagens — inclusive para staff.
+
+Mensagens: toda criação, alteração e exclusão usa o framework de mensagens
+(``MensagemCrudMixin``); exclusão bloqueada por registros ligados (PROTECT)
+vira ``messages.error`` em vez de erro 500.
+"""
+from datetime import timedelta
+
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import Group, User
+from django.db.models import Count, ProtectedError
+from django.shortcuts import redirect, render
+from django.urls import reverse, reverse_lazy
+from django.utils import timezone
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+from django_filters.views import FilterView
+
+from .filters import (DistribuidoraFilter, FarmaciaFilter, LaboratorioFilter,
+                      MedicamentoFilter, ProdutoDiversoFilter)
+from .forms import (DistribuidoraForm, FarmaciaForm, FormDoUsuario, GrupoForm, LaboratorioForm,
+                    MedicamentoForm, ProdutoDiversoForm, UsuarioForm, UsuarioUpdateForm)
+from .models import Distribuidora, Farmacia, Laboratorio, Medicamento, ProdutoDiverso
+from .permissoes import AdminRequiredMixin
+
+# Mantido para compatibilidade com código antigo que importava este nome.
+GrupoRequeridoMixin = AdminRequiredMixin
 
 
 # ── Dashboard ────────────────────────────────────────────────────────────────
+
 @login_required(login_url='/login/')
 def dashboard(request):
-    hoje = timezone.now().date()
-
-    meus_meds  = Medicamento.objects.filter(cadastrado_por=request.user).select_related('laboratorio', 'distribuidora')
-    meus_prods = ProdutoDiverso.objects.filter(cadastrado_por=request.user)
-    meus_labs  = Laboratorio.objects.filter(cadastrado_por=request.user)
-    meus_dists = Distribuidora.objects.filter(cadastrado_por=request.user)
+    hoje = timezone.localdate()
+    meus_meds = Medicamento.objects.filter(cadastrado_por=request.user)
 
     return render(request, 'website/dashboard.html', {
-        'total_med':  Medicamento.objects.count()    if request.user.is_staff else meus_meds.count(),
-        'total_prod': ProdutoDiverso.objects.count() if request.user.is_staff else meus_prods.count(),
-        'total_lab':  Laboratorio.objects.count()    if request.user.is_staff else meus_labs.count(),
-        'total_dist': Distribuidora.objects.count()  if request.user.is_staff else meus_dists.count(),
-
-        'ultimos_meds':     meus_meds.order_by('-cadastrado_em')[:5],
-        'meds_vencidos':    meus_meds.filter(data_validade__lt=hoje).order_by('data_validade')[:5],
-        'meds_controlados': meus_meds.filter(controlado=True).order_by('-cadastrado_em')[:5],
-        'ultimos_prods':    meus_prods.order_by('-cadastrado_em')[:5],
+        'total_med':  meus_meds.count(),
+        'total_prod': ProdutoDiverso.objects.filter(cadastrado_por=request.user).count(),
+        'total_lab':  Laboratorio.objects.filter(cadastrado_por=request.user).count(),
+        'total_dist': Distribuidora.objects.filter(cadastrado_por=request.user).count(),
+        # select_related: a tabela mostra o laboratório de cada medicamento;
+        # sem ele seria 1 consulta extra por linha (N+1).
+        'meds_alerta': (
+            meus_meds.select_related('laboratorio')
+            .filter(data_validade__lte=hoje + timedelta(days=30))
+            .order_by('data_validade')[:5]
+        ),
         'hoje': hoje,
     })
 
 
 # ── Mixins ───────────────────────────────────────────────────────────────────
 
-class FarmaciaLoginMixin(LoginRequiredMixin):
+class DonoQuerysetMixin(LoginRequiredMixin):
+    """Só os registros do usuário logado (404 para os dos outros)."""
     login_url = '/login/'
+    relacionados = ()  # nomes para select_related (evita N+1 nas tabelas)
+
+    def get_queryset(self):
+        qs = super().get_queryset().filter(cadastrado_por=self.request.user)
+        if self.relacionados:
+            qs = qs.select_related(*self.relacionados)
+        return qs
+
+
+class FormComUsuarioMixin:
+    """Entrega o usuário logado ao form (FKs limitadas aos registros dele)."""
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if issubclass(self.get_form_class(), FormDoUsuario):
+            kwargs['usuario'] = self.request.user
+        return kwargs
+
+
+class MensagemCrudMixin:
+    """Mensagem de sucesso no cadastro, na alteração e na exclusão."""
+    acao = ''        # 'cadastrad', 'atualizad', 'excluíd'
+    genero = 'o'     # 'o' ou 'a' (ex.: "Distribuidora ... excluída")
+
+    def get_success_message(self):
+        nome = self.model._meta.verbose_name.capitalize()
+        return f'{nome} "{self.object}" {self.acao}{self.genero} com sucesso.'
 
     def form_valid(self, form):
-        obj = form.save(commit=False)
-        if not obj.pk:
-            obj.cadastrado_por = self.request.user
-        obj.save()
-        return redirect(self.success_url)
+        resposta = super().form_valid(form)
+        messages.success(self.request, self.get_success_message())
+        return resposta
 
 
-class DonoOuStaffMixin(LoginRequiredMixin, UserPassesTestMixin):
+class DetalheMixin:
+    """Monta a lista (rótulo, valor) dos campos para o template detalhe.html."""
+    url_base = ''
+    campos_ocultos = ('id', 'password')
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        obj = self.object
+        campos = []
+        for campo in obj._meta.fields:
+            if campo.name in self.campos_ocultos:
+                continue
+            if campo.choices:
+                valor = getattr(obj, f'get_{campo.name}_display')()
+            else:
+                valor = getattr(obj, campo.name)
+            campos.append((campo.verbose_name, valor))
+        ctx.update(
+            campos=campos,
+            nome_modelo=obj._meta.verbose_name,
+            nome_plural=obj._meta.verbose_name_plural,
+            url_listar=reverse(f'{self.url_base}_listar'),
+            url_editar=reverse(f'{self.url_base}_editar', args=[obj.pk]),
+            url_excluir=reverse(f'{self.url_base}_excluir', args=[obj.pk]),
+        )
+        return ctx
+
+
+# ── Bases genéricas dos CRUDs por dono ───────────────────────────────────────
+
+class DonoListView(DonoQuerysetMixin, FilterView):
+    """Lista com django-filter + paginação (website/_paginacao.html)."""
+    paginate_by = 10
+    ordering = ['-cadastrado_em']
+
+
+class DonoDetailView(DonoQuerysetMixin, DetalheMixin, DetailView):
+    template_name = 'website/detalhe.html'
+
+
+class DonoCreateView(LoginRequiredMixin, FormComUsuarioMixin, MensagemCrudMixin, CreateView):
     login_url = '/login/'
+    template_name = 'website/form.html'
+    acao = 'cadastrad'
 
-    def test_func(self):
-        obj = self.get_object()
-        return self.request.user.is_staff or obj.cadastrado_por == self.request.user
-
-    def handle_no_permission(self):
-        messages.error(self.request, 'Você não tem permissão para acessar este registro.')
-        return redirect(self.request.META.get('HTTP_REFERER', 'dashboard'))
+    def form_valid(self, form):
+        form.instance.cadastrado_por = self.request.user
+        return super().form_valid(form)
 
 
-class GrupoRequeridoMixin(LoginRequiredMixin, UserPassesTestMixin):
-    login_url = '/login/'
-    grupo_requerido = None
+class DonoUpdateView(DonoQuerysetMixin, FormComUsuarioMixin, MensagemCrudMixin, UpdateView):
+    template_name = 'website/form.html'
+    acao = 'atualizad'
 
-    def test_func(self):
-        if self.request.user.is_staff:
-            return True
-        if self.grupo_requerido:
-            return self.request.user.groups.filter(name=self.grupo_requerido).exists()
-        return False
 
-    def handle_no_permission(self):
-        messages.error(self.request, 'Seu grupo de usuário não tem acesso a esta área.')
-        return redirect('dashboard')
+class DonoDeleteView(DonoQuerysetMixin, MensagemCrudMixin, DeleteView):
+    template_name = 'website/form.html'
+    acao = 'excluíd'
+
+    def form_valid(self, form):
+        try:
+            return super().form_valid(form)
+        except ProtectedError:
+            messages.error(
+                self.request,
+                f'Não foi possível excluir "{self.object}": existem outros cadastros ligados a ele(a).')
+            return redirect(self.get_success_url())
 
 
 # ── Laboratório ──────────────────────────────────────────────────────────────
 
-class LaboratorioList(LoginRequiredMixin, ListView):
+class LaboratorioList(DonoListView):
     model = Laboratorio
+    filterset_class = LaboratorioFilter
     template_name = 'website/laboratorio.html'
     context_object_name = 'labs'
-    login_url = '/login/'
-    paginate_by = 10
-
-    def get_queryset(self):
-        qs = Laboratorio.objects.select_related('cadastrado_por')
-        if not self.request.user.is_staff:
-            qs = qs.filter(cadastrado_por=self.request.user)
-        return qs.order_by('-cadastrado_em')
 
 
-class LaboratorioDetail(LoginRequiredMixin, DetailView):
+class LaboratorioDetail(DonoDetailView):
     model = Laboratorio
-    template_name = 'website/detalhe.html'
-    login_url = '/login/'
-
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
-        if not self.request.user.is_staff and obj.cadastrado_por != self.request.user:
-            raise Http404
-        return obj
+    url_base = 'laboratorio'
 
 
-class LaboratorioCreate(FarmaciaLoginMixin, CreateView):
+class LaboratorioCreate(DonoCreateView):
     model = Laboratorio
     form_class = LaboratorioForm
-    template_name = 'website/form.html'
     success_url = reverse_lazy('laboratorio_listar')
     extra_context = {'titulo': 'Novo Laboratório', 'botao': 'Criar Laboratório'}
 
 
-class LaboratorioUpdate(DonoOuStaffMixin, FarmaciaLoginMixin, UpdateView):
+class LaboratorioUpdate(DonoUpdateView):
     model = Laboratorio
     form_class = LaboratorioForm
-    template_name = 'website/form.html'
     success_url = reverse_lazy('laboratorio_listar')
     extra_context = {'titulo': 'Editar Laboratório', 'botao': 'Salvar Alterações'}
 
 
-class LaboratorioDelete(DonoOuStaffMixin, DeleteView):
+class LaboratorioDelete(DonoDeleteView):
     model = Laboratorio
-    template_name = 'website/form.html'
     success_url = reverse_lazy('laboratorio_listar')
-    login_url = '/login/'
     extra_context = {'titulo': 'Excluir Laboratório', 'botao': 'Sim, excluir!'}
 
 
 # ── Distribuidora ────────────────────────────────────────────────────────────
 
-class DistribuidoraList(LoginRequiredMixin, ListView):
+class DistribuidoraList(DonoListView):
     model = Distribuidora
+    filterset_class = DistribuidoraFilter
     template_name = 'website/distribuidora.html'
     context_object_name = 'dists'
-    login_url = '/login/'
-    paginate_by = 10
-
-    def get_queryset(self):
-        qs = Distribuidora.objects.select_related('cadastrado_por')
-        if not self.request.user.is_staff:
-            qs = qs.filter(cadastrado_por=self.request.user)
-        return qs.order_by('-cadastrado_em')
 
 
-class DistribuidoraDetail(LoginRequiredMixin, DetailView):
+class DistribuidoraDetail(DonoDetailView):
     model = Distribuidora
-    template_name = 'website/detalhe.html'
-    login_url = '/login/'
-
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
-        if not self.request.user.is_staff and obj.cadastrado_por != self.request.user:
-            raise Http404
-        return obj
+    url_base = 'distribuidora'
 
 
-class DistribuidoraCreate(FarmaciaLoginMixin, CreateView):
+class DistribuidoraCreate(DonoCreateView):
     model = Distribuidora
     form_class = DistribuidoraForm
-    template_name = 'website/form.html'
+    genero = 'a'
     success_url = reverse_lazy('distribuidora_listar')
     extra_context = {'titulo': 'Nova Distribuidora', 'botao': 'Criar Distribuidora'}
 
 
-class DistribuidoraUpdate(DonoOuStaffMixin, FarmaciaLoginMixin, UpdateView):
+class DistribuidoraUpdate(DonoUpdateView):
     model = Distribuidora
     form_class = DistribuidoraForm
-    template_name = 'website/form.html'
+    genero = 'a'
     success_url = reverse_lazy('distribuidora_listar')
     extra_context = {'titulo': 'Editar Distribuidora', 'botao': 'Salvar Alterações'}
 
 
-class DistribuidoraDelete(DonoOuStaffMixin, DeleteView):
+class DistribuidoraDelete(DonoDeleteView):
     model = Distribuidora
-    template_name = 'website/form.html'
+    genero = 'a'
     success_url = reverse_lazy('distribuidora_listar')
-    login_url = '/login/'
     extra_context = {'titulo': 'Excluir Distribuidora', 'botao': 'Sim, excluir!'}
 
 
 # ── Medicamento ──────────────────────────────────────────────────────────────
 
-class MedicamentoList(LoginRequiredMixin, ListView):
+class MedicamentoList(DonoListView):
     model = Medicamento
+    filterset_class = MedicamentoFilter
     template_name = 'website/medicamento.html'
     context_object_name = 'meds'
-    login_url = '/login/'
-    paginate_by = 10
+    # A tabela mostra o laboratório: sem select_related seria 1 query por linha.
+    relacionados = ('laboratorio', 'distribuidora')
 
-    def get_queryset(self):
-        qs = Medicamento.objects.select_related('laboratorio', 'distribuidora', 'cadastrado_por')
-        if not self.request.user.is_staff:
-            qs = qs.filter(cadastrado_por=self.request.user)
-        return qs.order_by('-cadastrado_em')
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['hoje'] = timezone.localdate()
+        return ctx
 
 
-class MedicamentoDetail(LoginRequiredMixin, DetailView):
+class MedicamentoDetail(DonoDetailView):
     model = Medicamento
-    template_name = 'website/detalhe.html'
-    login_url = '/login/'
-
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
-        if not self.request.user.is_staff and obj.cadastrado_por != self.request.user:
-            raise Http404
-        return obj
+    url_base = 'medicamento'
+    relacionados = ('laboratorio', 'distribuidora', 'cadastrado_por')
 
 
-class MedicamentoCreate(FarmaciaLoginMixin, CreateView):
+class MedicamentoCreate(DonoCreateView):
     model = Medicamento
     form_class = MedicamentoForm
-    template_name = 'website/form.html'
     success_url = reverse_lazy('medicamento_listar')
     extra_context = {'titulo': 'Novo Medicamento', 'botao': 'Criar Medicamento', 'largura': 8}
 
 
-class MedicamentoUpdate(DonoOuStaffMixin, FarmaciaLoginMixin, UpdateView):
+class MedicamentoUpdate(DonoUpdateView):
     model = Medicamento
     form_class = MedicamentoForm
-    template_name = 'website/form.html'
     success_url = reverse_lazy('medicamento_listar')
     extra_context = {'titulo': 'Editar Medicamento', 'botao': 'Salvar Alterações', 'largura': 8}
 
 
-class MedicamentoDelete(DonoOuStaffMixin, DeleteView):
+class MedicamentoDelete(DonoDeleteView):
     model = Medicamento
-    template_name = 'website/form.html'
     success_url = reverse_lazy('medicamento_listar')
-    login_url = '/login/'
     extra_context = {'titulo': 'Excluir Medicamento', 'botao': 'Sim, excluir!'}
 
 
 # ── Produto Diverso ──────────────────────────────────────────────────────────
 
-class ProdutoDiversoList(LoginRequiredMixin, ListView):
+class ProdutoDiversoList(DonoListView):
     model = ProdutoDiverso
+    filterset_class = ProdutoDiversoFilter
     template_name = 'website/produto.html'
     context_object_name = 'prods'
-    login_url = '/login/'
-    paginate_by = 10
-
-    def get_queryset(self):
-        qs = ProdutoDiverso.objects.select_related('cadastrado_por')
-        if not self.request.user.is_staff:
-            qs = qs.filter(cadastrado_por=self.request.user)
-        return qs.order_by('-cadastrado_em')
 
 
-class ProdutoDiversoDetail(LoginRequiredMixin, DetailView):
+class ProdutoDiversoDetail(DonoDetailView):
     model = ProdutoDiverso
-    template_name = 'website/detalhe.html'
-    login_url = '/login/'
-
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
-        if not self.request.user.is_staff and obj.cadastrado_por != self.request.user:
-            raise Http404
-        return obj
+    url_base = 'produto'
 
 
-class ProdutoDiversoCreate(FarmaciaLoginMixin, CreateView):
+class ProdutoDiversoCreate(DonoCreateView):
     model = ProdutoDiverso
     form_class = ProdutoDiversoForm
-    template_name = 'website/form.html'
     success_url = reverse_lazy('produto_listar')
     extra_context = {'titulo': 'Novo Produto', 'botao': 'Criar Produto'}
 
 
-class ProdutoDiversoUpdate(DonoOuStaffMixin, FarmaciaLoginMixin, UpdateView):
+class ProdutoDiversoUpdate(DonoUpdateView):
     model = ProdutoDiverso
     form_class = ProdutoDiversoForm
-    template_name = 'website/form.html'
     success_url = reverse_lazy('produto_listar')
     extra_context = {'titulo': 'Editar Produto', 'botao': 'Salvar Alterações'}
 
 
-class ProdutoDiversoDelete(DonoOuStaffMixin, DeleteView):
+class ProdutoDiversoDelete(DonoDeleteView):
     model = ProdutoDiverso
-    template_name = 'website/form.html'
     success_url = reverse_lazy('produto_listar')
-    login_url = '/login/'
     extra_context = {'titulo': 'Excluir Produto', 'botao': 'Sim, excluir!'}
-
-
-# ── Usuários ──────────────────────────────────────────────────────────────────
-
-class UsuarioList(GrupoRequeridoMixin, ListView):
-    model = User
-    template_name = 'website/usuario.html'
-    context_object_name = 'usuarios'
-    grupo_requerido = 'Gerentes'
-    paginate_by = 10
-
-    def get_queryset(self):
-        return User.objects.order_by('username')
-
-
-class UsuarioDetail(GrupoRequeridoMixin, DetailView):
-    model = User
-    template_name = 'website/detalhe.html'
-    grupo_requerido = 'Gerentes'
-
-
-class UsuarioCreate(GrupoRequeridoMixin, CreateView):
-    model = User
-    form_class = UsuarioForm
-    template_name = 'website/form.html'
-    success_url = reverse_lazy('usuario_listar')
-    grupo_requerido = 'Gerentes'
-    extra_context = {'titulo': 'Novo Usuário', 'botao': 'Criar Usuário'}
-
-
-class UsuarioUpdate(GrupoRequeridoMixin, UpdateView):
-    model = User
-    form_class = UsuarioForm
-    template_name = 'website/form.html'
-    success_url = reverse_lazy('usuario_listar')
-    grupo_requerido = 'Gerentes'
-    extra_context = {'titulo': 'Editar Usuário', 'botao': 'Salvar Alterações'}
-
-
-class UsuarioDelete(GrupoRequeridoMixin, DeleteView):
-    model = User
-    template_name = 'website/form.html'
-    success_url = reverse_lazy('usuario_listar')
-    grupo_requerido = 'Gerentes'
-    extra_context = {'titulo': 'Excluir Usuário', 'botao': 'Sim, excluir!'}
-
-
-# ── Grupos ────────────────────────────────────────────────────────────────────
-
-class GrupoList(GrupoRequeridoMixin, ListView):
-    model = Group
-    template_name = 'website/grupo.html'
-    context_object_name = 'grupos'
-    grupo_requerido = 'Gerentes'
-    paginate_by = 10
-
-    def get_queryset(self):
-        return Group.objects.order_by('name')
-
-
-class GrupoDetail(GrupoRequeridoMixin, DetailView):
-    model = Group
-    template_name = 'website/detalhe.html'
-    grupo_requerido = 'Gerentes'
-
-
-class GrupoCreate(GrupoRequeridoMixin, CreateView):
-    model = Group
-    form_class = GrupoForm
-    template_name = 'website/form.html'
-    success_url = reverse_lazy('grupo_listar')
-    grupo_requerido = 'Gerentes'
-    extra_context = {'titulo': 'Novo Grupo', 'botao': 'Criar Grupo'}
-
-
-class GrupoUpdate(GrupoRequeridoMixin, UpdateView):
-    model = Group
-    form_class = GrupoForm
-    template_name = 'website/form.html'
-    success_url = reverse_lazy('grupo_listar')
-    grupo_requerido = 'Gerentes'
-    extra_context = {'titulo': 'Editar Grupo', 'botao': 'Salvar Alterações'}
-
-
-class GrupoDelete(GrupoRequeridoMixin, DeleteView):
-    model = Group
-    template_name = 'website/form.html'
-    success_url = reverse_lazy('grupo_listar')
-    grupo_requerido = 'Gerentes'
-    extra_context = {'titulo': 'Excluir Grupo', 'botao': 'Sim, excluir!'}
 
 
 # ── Farmácias ────────────────────────────────────────────────────────────────
 
-class FarmaciaList(LoginRequiredMixin, ListView):
+class FarmaciaList(DonoListView):
     model = Farmacia
+    filterset_class = FarmaciaFilter
     template_name = 'website/farmacia.html'
     context_object_name = 'farmacias'
-    login_url = '/login/'
-    paginate_by = 10
-
-    def get_queryset(self):
-        qs = Farmacia.objects.select_related('cadastrado_por', 'grupo')
-        if not self.request.user.is_staff:
-            qs = qs.filter(cadastrado_por=self.request.user)
-        return qs.order_by('-cadastrado_em')
+    relacionados = ('grupo',)
 
 
-class FarmaciaDetail(LoginRequiredMixin, DetailView):
+class FarmaciaDetail(DonoDetailView):
     model = Farmacia
-    template_name = 'website/detalhe.html'
-    login_url = '/login/'
-
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
-        if not self.request.user.is_staff and obj.cadastrado_por != self.request.user:
-            raise Http404
-        return obj
+    url_base = 'farmacia'
+    relacionados = ('grupo', 'cadastrado_por')
 
 
-class FarmaciaCreate(FarmaciaLoginMixin, CreateView):
+class FarmaciaCreate(DonoCreateView):
     model = Farmacia
     form_class = FarmaciaForm
-    template_name = 'website/form.html'
+    genero = 'a'
     success_url = reverse_lazy('farmacia_listar')
     extra_context = {'titulo': 'Nova Farmácia', 'botao': 'Criar Farmácia'}
 
 
-class FarmaciaUpdate(DonoOuStaffMixin, FarmaciaLoginMixin, UpdateView):
+class FarmaciaUpdate(DonoUpdateView):
     model = Farmacia
     form_class = FarmaciaForm
-    template_name = 'website/form.html'
+    genero = 'a'
     success_url = reverse_lazy('farmacia_listar')
     extra_context = {'titulo': 'Editar Farmácia', 'botao': 'Salvar Alterações'}
 
 
-class FarmaciaDelete(DonoOuStaffMixin, DeleteView):
+class FarmaciaDelete(DonoDeleteView):
     model = Farmacia
-    template_name = 'website/form.html'
+    genero = 'a'
     success_url = reverse_lazy('farmacia_listar')
-    login_url = '/login/'
     extra_context = {'titulo': 'Excluir Farmácia', 'botao': 'Sim, excluir!'}
+
+
+# ── Usuários (somente gerentes) ──────────────────────────────────────────────
+
+class UsuarioList(AdminRequiredMixin, ListView):
+    model = User
+    template_name = 'website/usuario.html'
+    context_object_name = 'usuarios'
+    paginate_by = 10
+
+    def get_queryset(self):
+        # prefetch_related: a tabela mostra os grupos de cada usuário.
+        return User.objects.prefetch_related('groups').order_by('username')
+
+
+class UsuarioDetail(AdminRequiredMixin, DetalheMixin, DetailView):
+    model = User
+    template_name = 'website/detalhe.html'
+    url_base = 'usuario'
+
+
+class UsuarioCreate(AdminRequiredMixin, MensagemCrudMixin, CreateView):
+    model = User
+    form_class = UsuarioForm
+    template_name = 'website/form.html'
+    success_url = reverse_lazy('usuario_listar')
+    acao = 'cadastrad'
+    extra_context = {'titulo': 'Novo Usuário', 'botao': 'Criar Usuário'}
+
+
+class UsuarioUpdate(AdminRequiredMixin, MensagemCrudMixin, UpdateView):
+    model = User
+    form_class = UsuarioUpdateForm
+    template_name = 'website/form.html'
+    success_url = reverse_lazy('usuario_listar')
+    acao = 'atualizad'
+    extra_context = {'titulo': 'Editar Usuário', 'botao': 'Salvar Alterações'}
+
+
+class UsuarioDelete(AdminRequiredMixin, MensagemCrudMixin, DeleteView):
+    model = User
+    template_name = 'website/form.html'
+    success_url = reverse_lazy('usuario_listar')
+    acao = 'excluíd'
+    extra_context = {'titulo': 'Excluir Usuário', 'botao': 'Sim, excluir!'}
+
+    def form_valid(self, form):
+        if self.object == self.request.user:
+            messages.error(self.request, 'Você não pode excluir o seu próprio usuário.')
+            return redirect(self.success_url)
+        try:
+            return super().form_valid(form)
+        except ProtectedError:
+            messages.error(
+                self.request,
+                f'Não foi possível excluir "{self.object}": o usuário tem cadastros no sistema. '
+                'Desative-o em "Editar".')
+            return redirect(self.success_url)
+
+
+# ── Grupos (somente gerentes) ────────────────────────────────────────────────
+
+class GrupoList(AdminRequiredMixin, ListView):
+    model = Group
+    template_name = 'website/grupo.html'
+    context_object_name = 'grupos'
+    paginate_by = 10
+
+    def get_queryset(self):
+        # annotate: o template mostrava g.user_set.count (1 COUNT por linha,
+        # visto como "queries repetidas" na Debug Toolbar). Agora é 1 query só.
+        return Group.objects.annotate(num_membros=Count('user')).order_by('name')
+
+
+class GrupoDetail(AdminRequiredMixin, DetalheMixin, DetailView):
+    model = Group
+    template_name = 'website/detalhe.html'
+    url_base = 'grupo'
+
+
+class GrupoCreate(AdminRequiredMixin, MensagemCrudMixin, CreateView):
+    model = Group
+    form_class = GrupoForm
+    template_name = 'website/form.html'
+    success_url = reverse_lazy('grupo_listar')
+    acao = 'cadastrad'
+    extra_context = {'titulo': 'Novo Grupo', 'botao': 'Criar Grupo'}
+
+
+class GrupoUpdate(AdminRequiredMixin, MensagemCrudMixin, UpdateView):
+    model = Group
+    form_class = GrupoForm
+    template_name = 'website/form.html'
+    success_url = reverse_lazy('grupo_listar')
+    acao = 'atualizad'
+    extra_context = {'titulo': 'Editar Grupo', 'botao': 'Salvar Alterações'}
+
+
+class GrupoDelete(AdminRequiredMixin, MensagemCrudMixin, DeleteView):
+    model = Group
+    template_name = 'website/form.html'
+    success_url = reverse_lazy('grupo_listar')
+    acao = 'excluíd'
+    extra_context = {'titulo': 'Excluir Grupo', 'botao': 'Sim, excluir!'}
+
+    def form_valid(self, form):
+        try:
+            return super().form_valid(form)
+        except ProtectedError:
+            messages.error(self.request, f'Não foi possível excluir "{self.object}": há farmácias ligadas a ele.')
+            return redirect(self.success_url)

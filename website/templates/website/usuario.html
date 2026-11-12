@@ -23,6 +23,7 @@
           <th>Usuário</th>
           <th>Nome</th>
           <th>E-mail</th>
+          <th>Grupos</th>
           <th>Admin</th>
           <th>Ativo</th>
           <th class="text-center">Ações</th>
@@ -40,6 +41,7 @@
           </td>
           <td>{{ u.get_full_name|default:"—" }}</td>
           <td>{{ u.email|default:"—" }}</td>
+          <td>{% for g in u.groups.all %}<span class="badge bg-light text-dark border me-1">{{ g.name }}</span>{% empty %}<span style="color:var(--clr-muted)">—</span>{% endfor %}</td>
           <td>
             {% if u.is_staff %}
               <span class="badge-s s-ativo"><i class="bi bi-shield-check me-1"></i>Sim</span>
@@ -55,23 +57,13 @@
             {% endif %}
           </td>
           <td class="text-center">
-            <div class="dropdown">
-              <button class="btn btn-link btn-sm text-muted p-0" data-bs-toggle="dropdown">
-                <i class="bi bi-three-dots-vertical"></i>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="{% url 'usuario_editar' u.pk %}"><i class="bi bi-pencil me-2"></i>Editar</a></li>
-                {% if u != request.user %}
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item text-danger" href="{% url 'usuario_excluir' u.pk %}"><i class="bi bi-trash me-2"></i>Excluir</a></li>
-                {% endif %}
-              </ul>
-            </div>
+            {% url 'usuario_detalhe' u.pk as url_detalhe %}{% url 'usuario_editar' u.pk as url_editar %}{% url 'usuario_excluir' u.pk as url_excluir %}
+            {% if u != request.user %}{% include "website/_acoes.html" with obj=u %}{% else %}<a href="{{ url_editar }}" class="btn btn-link btn-sm text-muted p-0" title="Editar"><i class="bi bi-pencil"></i></a>{% endif %}
           </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="7" class="text-center py-4 text-muted">
+          <td colspan="8" class="text-center py-4 text-muted">
             <i class="bi bi-inbox fs-3 d-block mb-2"></i>Nenhum usuário encontrado.
           </td>
         </tr>
@@ -80,4 +72,5 @@
     </table>
   </div>
 </div>
+{% include "website/_paginacao.html" %}
 {% endblock %}

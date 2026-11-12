@@ -166,7 +166,7 @@ class CP07_EditarMedicamentoProprioTest(TestCase):
 
 
 class CP08_EditarMedicamentoAlheioTest(TestCase):
-    """CP08: Não-dono é bloqueado ao tentar editar medicamento de outro."""
+    """CP08: Não-dono recebe 404 ao tentar editar medicamento de outro."""
 
     def setUp(self):
         self.dono = criar_usuario('dono_cp08')
@@ -176,7 +176,7 @@ class CP08_EditarMedicamentoAlheioTest(TestCase):
     def test_bloqueado_na_edicao_alheia(self):
         self.client.login(username='outro_cp08', password='teste12345')
         resp = self.client.get(f'/farmacia/medicamento/{self.med.pk}/editar/')
-        self.assertEqual(resp.status_code, 302)  # redirecionado = bloqueio
+        self.assertEqual(resp.status_code, 404)  # registro de outro usuário "não existe" para ele
 
 
 class CP09_ExcluirMedicamentoProprioTest(TestCase):
@@ -293,11 +293,11 @@ class CB01_FiltroPorDonoTest(TestCase):
         self.assertEqual(len(meds), 1)
         self.assertEqual(meds[0].cadastrado_por, self.alice)
 
-    def test_staff_ve_todos_os_registros(self):
+    def test_staff_tambem_ve_apenas_os_seus(self):
+        # Requisito: somente quem cadastrou lista/visualiza/altera/exclui.
         self.client.login(username='admin_user', password='teste12345')
         resp = self.client.get('/farmacia/medicamento/')
-        meds = list(resp.context['meds'])
-        self.assertGreaterEqual(len(meds), 2)
+        self.assertEqual(list(resp.context['meds']), [])
 
 
 class CB03_GravarDonoAoCriarTest(TestCase):
@@ -320,7 +320,7 @@ class CB03_GravarDonoAoCriarTest(TestCase):
 
 
 class CB05_MixinBloqueiaNaoDonoTest(TestCase):
-    """CB05: DonoOuStaffMixin bloqueia não-dono na edição."""
+    """CB05: DonoQuerysetMixin bloqueia não-dono na edição (404)."""
 
     def setUp(self):
         self.dono    = criar_usuario('dono')
@@ -330,7 +330,7 @@ class CB05_MixinBloqueiaNaoDonoTest(TestCase):
     def test_nao_dono_bloqueado_na_edicao(self):
         self.client.login(username='intruso', password='teste12345')
         resp = self.client.get(f'/farmacia/medicamento/{self.med.pk}/editar/')
-        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp.status_code, 404)
 
     def test_dono_consegue_editar(self):
         self.client.login(username='dono', password='teste12345')

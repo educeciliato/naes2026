@@ -6,8 +6,8 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-# Defina aqui a DATABASE_URL (provisório para execução local)
-os.environ['DATABASE_URL'] = 'postgresql://neondb_owner:npg_FAlIq4RE5LZn@ep-lingering-glade-ac7bddn4-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
+# A DATABASE_URL vem do ambiente ou do .env (carregado pelo settings).
+# Nunca escreva a URL do banco aqui: ela contém usuário e senha.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'naes2026.settings')
 
 from django import setup as django_setup

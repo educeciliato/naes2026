@@ -17,3 +17,12 @@
 __pycache__/
 # Ignored by the build system
 /setup.cfg
+# Locais / não vão para o App Engine
+.env
+.venv/
+venv/
+db.sqlite3
+test_load.sqlite3
+staticfiles/
+.claude/
+docs/

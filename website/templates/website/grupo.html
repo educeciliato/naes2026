@@ -30,18 +30,10 @@
         <tr>
           <td>{{ g.pk }}</td>
           <td><strong>{{ g.name }}</strong></td>
-          <td>{{ g.user_set.count }}</td>
+          <td>{{ g.num_membros }}</td>
           <td class="text-center">
-            <div class="dropdown">
-              <button class="btn btn-link btn-sm text-muted p-0" data-bs-toggle="dropdown">
-                <i class="bi bi-three-dots-vertical"></i>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="{% url 'grupo_editar' g.pk %}"><i class="bi bi-pencil me-2"></i>Editar</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item text-danger" href="{% url 'grupo_excluir' g.pk %}"><i class="bi bi-trash me-2"></i>Excluir</a></li>
-              </ul>
-            </div>
+            {% url 'grupo_detalhe' g.pk as url_detalhe %}{% url 'grupo_editar' g.pk as url_editar %}{% url 'grupo_excluir' g.pk as url_excluir %}
+            {% include "website/_acoes.html" with obj=g %}
           </td>
         </tr>
         {% empty %}
@@ -55,4 +47,5 @@
     </table>
   </div>
 </div>
+{% include "website/_paginacao.html" %}
 {% endblock %}

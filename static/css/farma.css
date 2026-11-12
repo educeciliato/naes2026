@@ -281,3 +281,61 @@ footer {
   padding: 2rem 1rem;
 }
 .login-box { width: 100%; max-width: 400px; }
+/* ─── Filtros (django-filter): campos lado a lado ─────────── */
+form.form-filtro div[id^="div_id_"] {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 10rem;
+}
+form.form-filtro .form-label { font-family: 'Saira', sans-serif; font-size: .85rem; letter-spacing: 0; }
+
+/* ─── Detalhe ─────────────────────────────────────────────── */
+.detalhe-lista dt { color: var(--clr-muted); font-weight: 500; font-size: .85rem; }
+.detalhe-lista dd { margin-bottom: .8rem; }
+
+/* ─── Assistente (balões de conversa) ─────────────────────── */
+.chat-mensagens {
+  overflow-y: auto;
+  background: var(--clr-bg-alt);
+  display: flex;
+  flex-direction: column;
+  height: 60vh;
+  min-height: 320px;
+}
+.chat-balao {
+  max-width: 85%;
+  padding: .55rem .85rem;
+  margin-bottom: .6rem;
+  border-radius: 1rem;
+  white-space: pre-wrap;        /* quebras de linha sem precisar de HTML */
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+  font-size: .95rem;
+}
+.chat-user {
+  align-self: flex-end;
+  background: var(--clr-primary);
+  color: #fff;
+  border-bottom-right-radius: .25rem;
+}
+.chat-model {
+  align-self: flex-start;
+  background: var(--clr-surface);
+  color: var(--clr-text);
+  border: 1px solid var(--clr-border);
+  border-bottom-left-radius: .25rem;
+  white-space: normal;          /* a resposta já vem em HTML (Markdown sanitizado) */
+}
+.chat-model p, .chat-model ul, .chat-model ol { margin-bottom: .5rem; }
+.chat-model > :last-child { margin-bottom: 0; }
+.chat-model ul, .chat-model ol { padding-left: 1.25rem; }
+.chat-model h3, .chat-model h4, .chat-model h5, .chat-model h6 { font-size: 1rem; font-family: 'Saira', sans-serif; font-weight: 600; }
+.chat-erro {
+  align-self: flex-start;
+  background: var(--clr-accent-l);
+  color: var(--clr-danger);
+  border: 1px solid rgba(192, 57, 75, .25);
+}
+
+/* ─── DataTables com a paleta do site ─────────────────────── */
+.dt-container .page-item.active .page-link { background: var(--clr-primary); border-color: var(--clr-primary); }
